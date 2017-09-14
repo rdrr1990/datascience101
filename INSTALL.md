@@ -65,7 +65,7 @@ Windows users should install [Miktex](https://miktex.org/howto/install-miktex)
 
 - For basic R syntax, complete these [short e-tutorials](http://tryr.codeschool.com/).
 
-- [Cheat Sheets on RStudio and RMarkdown](https://www.rstudio.com/resources/cheatsheets/)
+- [Cheat Sheets for RStudio and RMarkdown](https://www.rstudio.com/resources/cheatsheets/)
 
 - [Useful Math symbols in LaTex](https://www.sharelatex.com/learn/List_of_Greek_letters_and_math_symbols)
 
