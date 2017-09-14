@@ -22,9 +22,9 @@ If you're operating system isn't new enough for the newest version of `R`, you s
 
 ## RTools for Windows
 
-Many of the more advanced, newer packages and development features in R require Windows users to have RTools. Windows users should install [RTools 3.3](https://cran.r-project.org/bin/windows/Rtools/). 
+Many of the newer packages and development features in `R` require Windows users to have `RTools`. Windows users should install [RTools 3.3](https://cran.r-project.org/bin/windows/Rtools/). 
 
-There's no "RTools for Mac" but talk to your instructor if your Mac doesn't seem to be configured properly to install all of the packages. To learn more about best configuration practices for both Mac and Windows, we recommend http://thecoatlessprofessor.com/.
+There is no "RTools for Mac" but talk to your instructor if your Mac doesn't seem to be configured properly to install all of the packages. To learn more about best configuration practices for both Mac and Windows, we recommend http://thecoatlessprofessor.com/.
 
 
 ## Why RStudio?
