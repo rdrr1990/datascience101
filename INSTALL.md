@@ -48,7 +48,7 @@ Just like you have to install apps separately on your phone, to get the most out
 source('https://github.com/rdrr1990/datascience101/INSTALL.R')
 ```
 
-Click [here] to see the source code and a brief explanation of how that works.
+Click [here](https://github.com/rdrr1990/datascience101/INSTALL.R) to see the source code and a brief explanation of how that works.
 
 
 ## Using LaTeX for Equations
