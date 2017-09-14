@@ -48,6 +48,8 @@ Just like you have to install apps separately on your phone, to get the most out
 source('https://raw.githubusercontent.com/rdrr1990/datascience101/master/INSTALL.R')
 ```
 
+`RStudio` may prompt you a few times asking you to restart the `R` session so that no packages that may be affected by the install are open.  That's fine, just keep clicking 'yes'.
+
 Click [here](https://github.com/rdrr1990/datascience101/INSTALL.R) to see the source code and a brief explanation of how that works.
 
 
