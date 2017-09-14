@@ -16,7 +16,7 @@ In this course we use `R` for our computations. `R` is a one stop shop for data 
 
 ### Getting R
 
-Install [R 3.4.1 "Single Candle"](https://cran.cnr.berkeley.edu/) for your operating system (Mac, Windows, etc.).
+Install [R 3.4.1 "Single Candle"](https://cran.cnr.berkeley.edu/) for your operating system (Mac, Windows, Linux...).
 
 If you're operating system isn't new enough for the newest version of `R`, you should (at some point) consider upgrading your OS. However, the majority of the course material should work on a slightly older version like `3.3`, so you can use the link above to find the newest possible version for now. Talk an instructor about any problems you encounter.
 
