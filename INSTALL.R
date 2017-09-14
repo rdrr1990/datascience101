@@ -18,12 +18,12 @@ install.packages("fivethirtyeight")
 ### Getting RTools for Windows 
 # Windows users should install RTools 3.3 from  
 # https://cran.r-project.org/bin/windows/Rtools/
-  
-  
+
+
 ## Installing the Data Science 101 Packages
 # To be able to do all of the lab activies and work with the code found in lecture slides, 
 # you need a long list of packages. 
-# Fortunately you can just copy and paste all at once.
+# Fortunately, this can all be done at once. 
 
 pkgs <- c('boot', 'class', 'combinat', 'crayon', 
           'devtools', 'dplyr', 'foreach', 'ggplot2', 'graphics', 
@@ -34,10 +34,30 @@ pkgs <- c('boot', 'class', 'combinat', 'crayon',
           'rvest', 'scatterplot3d', 'selectiveInference', 'tibble', 
           'tidyr', 'tm', 'UsingR', 'vcd', 'wordcloud', 'xml2')
 
-for(i in pkgs) install.packages(i)
+# normally you could just do install.packages(pkgs)
+# however, that's a little unstable with such a long list
+# since you don't want any package to be open that may be affected
+# by the install. instead, we will use a short loop that removes
+# all packages from the environment before installing the next one.
+# (like closing an app before updating...)
 
-# normally you could do install.packages(pkgs)
-# but this is a bit more stable for such a long list
+detachAllPackages <- function() {
+  
+  basic.packages <- c("package:stats","package:graphics","package:grDevices","package:utils","package:datasets","package:methods","package:base")
+  
+  package.list <- search()[ifelse(unlist(gregexpr("package:",search()))==1,TRUE,FALSE)]
+  
+  package.list <- setdiff(package.list,basic.packages)
+  
+  if (length(package.list)>0)  for (package in package.list) detach(package, character.only=TRUE)
+  
+} # https://stackoverflow.com/questions/7505547/detach-all-packages-while-working-in-r
+
+
+for(i in pkgs){
+  detachAllPackages()
+  install.packages(i)
+}
 
 
 ## Installing from GitHub
