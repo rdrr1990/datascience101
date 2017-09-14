@@ -69,5 +69,7 @@ Windows users should install [Miktex](https://miktex.org/howto/install-miktex)
 
 - [Useful Math symbols in LaTex](https://www.sharelatex.com/learn/List_of_Greek_letters_and_math_symbols)
 
+- [Course Website](http://web.stanford.edu/class/stats101/)
+
 ## All Done!
 
