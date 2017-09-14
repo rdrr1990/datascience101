@@ -9,7 +9,7 @@ In this course we use `R` for our computations. `R` is a one stop shop for data 
  - Open Source == free
  - Over 11,000 libraries == customizable research
  - Best in Class Data Visualization (`ggplot2`, `animation`)
- - Analyze many, many kinds of of numeric, textual, and visual data (`.csv`,`.xml`,`.pdf`, `.png`, `.gif`, `.sas`, `.dta`, `.json`, etc.)
+ - Analyze many, many kinds of of numeric, textual, and visual data (`.csv`,`.xml`,`.pdf`, `.png`, `.sas`, `.dta`, `.json`, etc.)
  - Extensions to other languages (`C`, `C++`, `Python`, `Java`, etc.)
  - Parallel processing for speed (with library(`parallel`) or `OMP`)
  - Distributed processing for big data (`Hadoop`, `Sparklyr`, etc.)
