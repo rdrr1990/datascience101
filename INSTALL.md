@@ -45,7 +45,7 @@ Install [RStudio 1.0.153](https://www.rstudio.com/products/rstudio/download/). (
 Just like you have to install apps separately on your phone, to get the most out of R you need to install packages based on your research interests. Open `RStudio`. On the left, you will see the `R` console. Copy and paste the line below into the console and hit enter.
 
 ```
-source('https://github.com/rdrr1990/datascience101/blob/master/INSTALL.R')
+source('https://raw.githubusercontent.com/rdrr1990/datascience101/master/INSTALL.R')
 ```
 
 Click [here](https://github.com/rdrr1990/datascience101/INSTALL.R) to see the source code and a brief explanation of how that works.
