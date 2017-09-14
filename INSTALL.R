@@ -26,7 +26,7 @@ install.packages("fivethirtyeight")
 # Fortunately you can just copy and paste the following command into the R Console.
 
 
-install.package(c('boot', 'class', 'combinat', 'crayon', 
+install.packages(c('boot', 'class', 'combinat', 'crayon', 
                   'devtools', 'dplyr', 'foreach', 'ggplot2', 'graphics', 
                   'Hmisc', 'IRdisplay', 'ISLR', 'iterpc', 'kernlab', 'knitr', 
                   'lubridate', 'magrittr', 'maps', 'MASS', 'mvtnorm', 
