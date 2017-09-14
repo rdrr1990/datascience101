@@ -25,37 +25,25 @@ install.packages("fivethirtyeight")
 # you need a long list of packages. 
 # Fortunately, this can all be done at once. 
 
-pkgs <- c('boot', 'class', 'combinat', 'crayon', 
-          'devtools', 'dplyr', 'foreach', 'ggplot2', 'graphics', 
-          'Hmisc', 'IRdisplay', 'ISLR', 'iterpc', 'kernlab', 'knitr', 
+pkgs <- c('readr', 'devtools', 'dplyr', 'tidyr', 
+          'foreach', 'ggplot2','boot', 
+          'rmarkdown', 'knitr',
+          'class', 'combinat', 'crayon',  
+           'graphics', 
+          'Hmisc', 'IRdisplay', 'ISLR', 'iterpc', 'kernlab',  
           'lubridate', 'magrittr', 'maps', 'MASS', 'mvtnorm', 
           'nutshell', 'nycflights13', 'pbdZMQ', 'RColorBrewer', 
-          'readr', 'repr', 'reshape2', 'rmarkdown', 'rpart.plot', 
+          'repr', 'reshape2', , 'rpart.plot', 
           'rvest', 'scatterplot3d', 'selectiveInference', 'tibble', 
-          'tidyr', 'tm', 'UsingR', 'vcd', 'wordcloud', 'xml2')
+           'tm', 'UsingR', 'vcd', 'wordcloud', 'xml2')
 
 # normally you could just do install.packages(pkgs)
 # however, that's a little unstable with such a long list
 # since you don't want any package to be open that may be affected
-# by the install. instead, we will use a short loop that removes
-# all packages from the environment before installing the next one.
-# (like closing an app before updating...)
-
-detachAllPackages <- function() {
-  
-  basic.packages <- c("package:stats","package:graphics","package:grDevices","package:utils","package:datasets","package:methods","package:base")
-  
-  package.list <- search()[ifelse(unlist(gregexpr("package:",search()))==1,TRUE,FALSE)]
-  
-  package.list <- setdiff(package.list,basic.packages)
-  
-  if (length(package.list)>0)  for (package in package.list) detach(package, character.only=TRUE)
-  
-} # https://stackoverflow.com/questions/7505547/detach-all-packages-while-working-in-r
-
+# by the install. instead, we will use a short loop that does them
+# one at a time.
 
 for(i in pkgs){
-  detachAllPackages()
   install.packages(i)
 }
 
