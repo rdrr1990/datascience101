@@ -33,7 +33,7 @@ pkgs <- c('readr', 'devtools', 'dplyr', 'tidyr',
           'Hmisc', 'IRdisplay', 'ISLR', 'iterpc', 'kernlab',  
           'lubridate', 'magrittr', 'maps', 'MASS', 'mvtnorm', 
           'nutshell', 'nycflights13', 'pbdZMQ', 'RColorBrewer', 
-          'repr', 'reshape2', , 'rpart.plot', 
+          'repr', 'reshape2', 'rpart.plot', 
           'rvest', 'scatterplot3d', 'selectiveInference', 'tibble', 
            'tm', 'UsingR', 'vcd', 'wordcloud', 'xml2')
 
