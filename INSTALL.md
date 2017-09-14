@@ -4,7 +4,7 @@ This is an installation guide for the computational software used by Stats / Dat
 
 ## Why R?
 
-In this course we use `R` for our computations. `R` is a one stop shop for data science. 
+In this course we use `R` for our computations. `R` is a one-stop-shop for data science. 
 
  - Open Source == free
  - Over 11,000 libraries == customizable research
