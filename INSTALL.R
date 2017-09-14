@@ -23,17 +23,21 @@ install.packages("fivethirtyeight")
 ## Installing the Data Science 101 Packages
 # To be able to do all of the lab activies and work with the code found in lecture slides, 
 # you need a long list of packages. 
-# Fortunately you can just copy and paste the following command into the R Console.
+# Fortunately you can just copy and paste all at once.
 
+pkgs <- c('boot', 'class', 'combinat', 'crayon', 
+          'devtools', 'dplyr', 'foreach', 'ggplot2', 'graphics', 
+          'Hmisc', 'IRdisplay', 'ISLR', 'iterpc', 'kernlab', 'knitr', 
+          'lubridate', 'magrittr', 'maps', 'MASS', 'mvtnorm', 
+          'nutshell', 'nycflights13', 'pbdZMQ', 'RColorBrewer', 
+          'readr', 'repr', 'reshape2', 'rmarkdown', 'rpart.plot', 
+          'rvest', 'scatterplot3d', 'selectiveInference', 'tibble', 
+          'tidyr', 'tm', 'UsingR', 'vcd', 'wordcloud', 'xml2')
 
-install.packages(c('boot', 'class', 'combinat', 'crayon', 
-                  'devtools', 'dplyr', 'foreach', 'ggplot2', 'graphics', 
-                  'Hmisc', 'IRdisplay', 'ISLR', 'iterpc', 'kernlab', 'knitr', 
-                  'lubridate', 'magrittr', 'maps', 'MASS', 'mvtnorm', 
-                  'nutshell', 'nycflights13', 'pbdZMQ', 'RColorBrewer', 
-                  'readr', 'repr', 'reshape2', 'rmarkdown', 'rpart.plot', 
-                  'rvest', 'scatterplot3d', 'selectiveInference', 'tibble', 
-                  'tidyr', 'tm', 'UsingR', 'vcd', 'wordcloud', 'xml2'))
+for(i in pkgs) install.packages(i)
+
+# normally you could do install.packages(pkgs)
+# but this is a bit more stable for such a long list
 
 
 ## Installing from GitHub
