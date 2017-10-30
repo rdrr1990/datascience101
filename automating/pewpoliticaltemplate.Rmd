@@ -1,0 +1,106 @@
+---
+title: "Survey Analysis"
+author: Pete Mohanty, PhD
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  pdf_document: default
+  word_document: default
+  html_notebook: default
+urlcolor: blue
+params:
+  spssfile: !r 1
+  surveywave: !r 2016
+---
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+library(pacman)                            
+p_load(knitr, foreign, questionr, tidyverse)
+opts_chunk$set(echo = FALSE)                                        # don't display R code,
+opts_chunk$set(warning = FALSE)                                     # warnings,
+opts_chunk$set(message = FALSE)                                     # messages,
+opts_chunk$set(comment = "")                                        # or ## before each line of R output.
+opts_chunk$set(results = "asis")                                    # enable kable() rendering inside loops, functions
+knitr::opts_knit$set(root.dir = '/users/mohanty/Desktop/pewpolitical/')
+```
+
+
+```{r}
+datafiles <- dir(pattern = "sav", recursive = TRUE)
+survey <- read.spss(datafiles[params$spssfile], to.data.frame = TRUE)
+```
+
+# `r params$surveywave` Survey
+
+This is basic report of summary statistics.
+
+Here's a weighted crosstab.
+
+```{r}
+kable(wtd.table(survey$ideo, survey$sex, survey$weight)/nrow(survey), digits = 2)
+```
+
+```{r}
+# here is some inevitable data cleaning (shortening labels, etc.)
+
+x <- names(survey)[grep("q2[[:digit:]]",  names(survey))]  
+# grab all Qs 20, 21, 22... 29 including 21a, 21b, etc.   
+y <- c("ideo", "party")
+
+levels(survey[["ideo"]])[4] <- "Liberal"
+levels(survey[["party"]])[4] <- "None"
+levels(survey[["party"]])[5] <- "Other"
+
+for(i in c(x, y)){
+  
+  levels(survey[[i]]) <- gsub("[^[:alnum:] ]", "", levels(survey[[i]])) 
+  # gsub is find and replace (substitute)
+  # above removes non-alphanumeric characters except space
+  
+  v <- grep("VOL", levels(survey[[i]]))   # keep track of voluntary responses...
+  levels(survey[[i]]) <- gsub("VOL ", "", levels(survey[[i]]))
+  levels(survey[[i]]) <- gsub("OR", "", levels(survey[[i]]))
+  levels(survey[[i]])[grep("Refused", levels(survey[[i]]))] <- "DK"
+  levels(survey[[i]])[grep("early", levels(survey[[i]]))] <- "Too early"
+  levels(survey[[i]])[grep("Neither", levels(survey[[i]]))] <- "Other"
+  
+  for(j in v){
+     levels(survey[[i]])[j] <- paste0(levels(survey[[i]])[j], "*") 
+     # finishes replacing (VOL) with more compact *
+  }
+}
+
+# collapse various types of spontaneous non-response (no party, don't know, etc.)
+levels(survey$q1)[3] <- "Don't Know (VOL)"
+tmp <- as.character(survey$party)
+survey$party.clean <- ifelse(tmp %in% levels(survey$party)[1:3], tmp, "VOL: Other")
+
+```
+
+Presidential approval numbers that only look at approval among Democrats or Republicans since, in bad times for the President, people may stop identifying with either. Here is a graph that hopefully shows a more complete picture.
+
+```{r}
+PA <- ggplot(survey) + theme_minimal()
+PA <- PA + geom_bar(aes(q1, y = (..count..)/sum(..count..), weight = weight, fill = q1))
+# y = (..count..)/sum(..count..) makes it percentage rather than a count
+PA <- PA + facet_grid(party.clean ~ .) + theme(strip.text.y = element_text(angle = 45))
+# facet_grid is what makes a graph for each group
+PA <- PA + xlab("") + ylab("Percent of Country") 
+PA <- PA + ggtitle(paste("Presidential Approval", params$surveywave))
+PA <- PA + scale_y_continuous(labels = scales::percent)
+PA
+```
+
+Here's a whole bunch more. In each case q21, q22, ... q30 will be weighted and broken down by ideology and then party.
+
+
+```{r}
+for(i in x){
+  for(j in y){
+    cat("\nWeighted proportions for", i, "broken down by", j, "\n")
+    print(kable(wtd.table(survey[[i]], survey[[j]], survey$weight)/nrow(survey), digits = 2))
+    cat("\n")          # break out of table formatting
+  }
+  cat("\\newpage")
+}
+
+```
