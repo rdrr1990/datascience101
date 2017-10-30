@@ -89,14 +89,14 @@ Here is an example of a weighted crosstab. `knitr::kable` will create a table th
 kable(wtd.table(survey$ideo, survey$sex, survey$weight)/nrow(survey), digits = 2)
 ```
 
-                     Male   Female
-------------------  -----  -------
-Very conservative    0.04     0.03
-Conservative         0.14     0.13
-Moderate             0.20     0.20
-Liberal              0.08     0.09
-Very liberal         0.03     0.03
-DK*                  0.02     0.03
+                     Male   Female 
+------------------  -----  ------- 
+Very conservative    0.04     0.03 
+Conservative         0.14     0.13 
+Moderate             0.20     0.20 
+Liberal              0.08     0.09 
+Very liberal         0.03     0.03 
+DK*                  0.02     0.03 
 
 Suppose we want to do many crosstabs. The syntax `survey$ideo` is widely used for convenience but `survey[["ideo"]]` will serve us better since it allow to work with vectors of variable names ([details from win-vector](http://www.win-vector.com/blog/2017/06/non-standard-evaluation-and-function-composition-in-r/)). Below, the first two calls to comparisons are identical but the final one is not because there is no variable "x" in the data frame `survey`.
 
