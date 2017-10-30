@@ -80,6 +80,7 @@ PA
 
 ![](mohanty_survey_guide_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
+\newpage
 
 Here is an example of a weighted crosstab. `knitr::kable` will create a table that's professional in appearance (when knit as `PDF`, `kable` takes the style of an academic journal).
 

@@ -2,9 +2,9 @@
 title: "Automating Summary of Surveys with RMarkdown"
 author: "Pete Mohanty"
 output:
-  pdf_document: default
   html_document:
     keep_md: yes
+  pdf_document: default
   word_document: default
 urlcolor: blue
 ---
@@ -55,6 +55,7 @@ opts_chunk$set(warning = FALSE)                          # don't display warning
 opts_chunk$set(message = FALSE)                          # or messages
 opts_chunk$set(comment = "")                             # get rid of ## before R output
 opts_chunk$set(tidy = TRUE)
+opts_chunk$set(asis = TRUE)
 knitr::opts_knit$set(root.dir = '/users/mohanty/Desktop/pewpolitical/')
 ```
 
@@ -118,10 +119,11 @@ PA <- PA + scale_y_continuous(labels = scales::percent)
 PA
 ```
 
+\newpage
 
 Here is an example of a weighted crosstab. `knitr::kable` will create a table that's professional in appearance (when knit as `PDF`, `kable` takes the style of an academic journal).
 
-```{r, asis = FALSE}
+```{r}
 kable(wtd.table(survey$ideo, survey$sex, survey$weight)/nrow(survey), digits = 2)
 ```
 
