@@ -1,7 +1,9 @@
 # Automating Summary of Surveys with RMarkdown
-Pete Mohanty  
+## Pete Mohanty  
 
-This guide is shows how to automate the summary of surveys with `R` and `RMarkdown` using `RStudio`. The basic setup is to write an `Rmd` file that will serve as a template and then a short script that (using `library(knitr)`) loops over each data file. This is great for portions of the document that don't change (e.g., "the survey shows substantial partisan polarization"). The `render` function then turns the `Rmd` into a `PDF` (or `HTML` or `docx` as desired), taking additional metadata about the data set as a "parameter" ([RStudio guide](http://rmarkdown.rstudio.com/developer_parameterized_reports.html)). There are countless ways to summarize a survey in `R`. This guide will show a few basics with `ggplot` and `questionr` but focus on the overall workflow (file management, etc.).  
+This guide is shows how to automate the summary of surveys with `R` and `RMarkdown` using `RStudio`. The motivation is twofold: *efficiency* (minimize copy and pasting, maximize the number of data sets that any given code can analyze) and *reproducibility* (minimize the effort to recreate scientific results, maximize the number of people and computers that can recreate the findings).
+
+The basic setup is to write an `Rmd` file that will serve as a template and then a short script that (using `library(knitr)`) loops over each data file. This is great for portions of the document that don't change (e.g., "the survey shows substantial partisan polarization"). The `render` function then turns the `Rmd` into a `PDF` (or `HTML` or `docx` as desired), taking additional metadata about the data set as a "parameter" ([RStudio guide](http://rmarkdown.rstudio.com/developer_parameterized_reports.html)). There are countless ways to summarize a survey in `R`. This guide will show a few basics with `ggplot` and `questionr` but focus on the overall workflow (file management, etc.).  
 
 Following the instructions here, you should be able to reproduce all four reports (and in principle, many more) despite only writing code to clean one survey. Almost all of the code that you need is found in this file, though some additional data cleaning code is found only in `pewpoliticaltemplate.Rmd`. The file that then loops over the available data sets is `pew_report_generator.R`.
 
