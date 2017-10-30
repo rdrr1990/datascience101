@@ -160,7 +160,7 @@ p_load(rmarkdown, knitr, foreign, questionr, tidyverse, update = TRUE)</code></p
 <h3>The Template</h3>
 <p>I find it easiest to write a fully working example and then make little changes as needed so that <code>knitr::render()</code> can loop over the data sets. First things first.</p>
 <pre class="r"><code>survey &lt;- read.spss(&quot;Jan16/Jan16 public.sav&quot;, to.data.frame = TRUE)</code></pre>
-<p>Here is a basic plot we might want, which reflects the survey weights. <code>facet_grid()</code> is used to create analogous plots for each party identification. The plot uses the slightly wonky syntax <code>y = (..count..)/sum(..count..)</code> to display the results as percentages rather than counts. Note some code that cleans the data (mostly shortening labels) is omitted for brevity but can be found <strong>INSERT LINK HERE</strong></p>
+<p>Here is a basic plot we might want, which reflects the survey weights. <code>facet_grid()</code> is used to create analogous plots for each party identification. The plot uses the slightly wonky syntax <code>y = (..count..)/sum(..count..)</code> to display the results as percentages rather than counts. Note some code that cleans the data (mostly shortening labels) is omitted for brevity but can be found <a href="https://github.com/rdrr1990/datascience101/blob/master/automating/pewpoliticaltemplate.Rmd">here</a>.</p>
 <pre class="r"><code>PA &lt;- ggplot(survey) + theme_minimal()
 PA &lt;- PA + geom_bar(aes(q1, y = (..count..)/sum(..count..), weight = weight, 
     fill = q1))

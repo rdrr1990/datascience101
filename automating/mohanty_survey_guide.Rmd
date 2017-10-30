@@ -2,9 +2,9 @@
 title: "Automating Summary of Surveys with RMarkdown"
 author: "Pete Mohanty"
 output:
+  pdf_document: default
   html_document:
     keep_md: yes
-  pdf_document: default
   word_document: default
 urlcolor: blue
 ---
@@ -106,7 +106,7 @@ survey$party.clean <- ifelse(tmp %in% levels(survey$party)[1:3], tmp, "VOL: Othe
 ```
 
 
-Here is a basic plot we might want, which reflects the survey weights. `facet_grid()` is used to create analogous plots for each party identification. The plot uses the slightly wonky syntax `y = (..count..)/sum(..count..)` to display the results as percentages rather than counts. Note some code that cleans the data (mostly shortening labels) is omitted for brevity but can be found **INSERT LINK HERE**
+Here is a basic plot we might want, which reflects the survey weights. `facet_grid()` is used to create analogous plots for each party identification. The plot uses the slightly wonky syntax `y = (..count..)/sum(..count..)` to display the results as percentages rather than counts. Note some code that cleans the data (mostly shortening labels) is omitted for brevity but can be found [here](https://github.com/rdrr1990/datascience101/blob/master/automating/pewpoliticaltemplate.Rmd).
 
 ```{r}
 PA <- ggplot(survey) + theme_minimal()
