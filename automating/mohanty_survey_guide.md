@@ -49,9 +49,9 @@ Next add an `R` code chunk to `pewpoliticaltemplate.Rmd` to take care of backgro
 
 Now the default settings have been set and you don't need to worry about suppressing warnings and so on with each code chunk. You can of course change them case-by-case as you like. 
 
--- Unlike in `R`, when setting the format options for individual code chunks (as shown above to suppress warnings before the defaults kick in), you do need to type out the words `TRUE` and `FALSE` in full. 
+-- Unlike in `R`, when setting the format options for individual code chunks, you do need to type out the words `TRUE` and `FALSE` in full (as shown above in the first code chunk where supressing warnings is necessary before the defaults kick in). 
 
--- In this document, by constrast, I've set the defaults to `echo = TRUE` and `tidy = TRUE` to display the R code more pleasingly.
+-- In this `Rmd`, by constrast, I've set the defaults to `echo = TRUE` and `tidy = TRUE` to display the R code more pleasingly.
 
 -- The setting `asis = TRUE` is very useful for professionally formatted tables (show below) but is not recommendable for raw R output of matrix and tables.
 
