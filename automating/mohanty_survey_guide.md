@@ -3,6 +3,8 @@ Pete Mohanty
 
 This guide is shows how to automate the summary of surveys with `R` and `RMarkdown` using `RStudio`. The basic setup is to write an `Rmd` file that will serve as a template and then a short script that (using `library(knitr)`) loops over each data file. This is great for portions of the document that don't change (e.g., "the survey shows substantial partisan polarization"). The `render` function then turns the `Rmd` into a `PDF` (or `HTML` or `docx` as desired), taking additional metadata about the data set as a "parameter" ([RStudio guide](http://rmarkdown.rstudio.com/developer_parameterized_reports.html)). There are countless ways to summarize a survey in `R`. This guide will show a few basics with `ggplot` and `questionr` but focus on the overall workflow (file management, etc.).  
 
+Following the instructions here, you should be able to reproduce all four reports (and in principle, many more) despite only writing code to clean one survey. Almost all of the code that you need is found in this file, though some additional data cleaning code is found only in `pewpoliticaltemplate.Rmd`. The file that then loops over the available data sets is `pew_report_generator.R`.
+
 
 # Software
 
@@ -62,7 +64,7 @@ survey <- read.spss("Jan16/Jan16 public.sav", to.data.frame = TRUE)
 
 
 
-Here is a basic plot we might want, which reflects the survey weights. `facet_grid()` is used to create analogous plots for each party identification. The plot uses the slightly wonky syntax `y = (..count..)/sum(..count..)` to display the results as percentages rather than counts. Note some code that cleans the data (mostly shortening labels) is omitted for brevity but can be found [here](https://github.com/rdrr1990/datascience101/blob/master/automating/pewpoliticaltemplate.Rmd).
+Here is a basic plot we might want, which reflects the survey weights. `facet_grid()` is used to create analogous plots for each party identification. The plot uses the slightly wonky syntax `y = (..count..)/sum(..count..)` to display the results as percentages rather than counts. Note some code that cleans the data (mostly shortening labels) is omitted for brevity but can be found **INSERT LINK HERE**
 
 
 ```r
@@ -220,12 +222,14 @@ Knit the file to see how it looks with these default settings; that\'s it for th
 
 # Automating with knitr
   
-Now create a new `R` script; mine\'s called `pew_report_generator.R`. It\'s just a simple loop that tells which data set to grqb as well as the label to pass to the `Rmd`. Note that the labels appear in alphabetical rather than chronological order as a function of the way that the `Rmd` happens to find the files.
+Now create a new `R` script; mine\'s called `pew_report_generator.R`. It\'s just a simple loop that tells which data set to grab as well as the label to pass to the `Rmd`. Note that the labels appear in alphabetical rather than chronological order as a function of the way that the `Rmd` happens to find the files.
 
 
 ```r
 library(pacman)
 p_load(knitr, rmarkdown, sessioninfo)
+
+setwd("/users/mohanty/Desktop/pewpolitical/")
 
 waves <- c("August 2016", "January 2016", "March 2016", "October 2016")
 
@@ -238,8 +242,10 @@ session <- session_info()
 save(session, file = paste0("session", format(Sys.time(), "%m%d%Y"), ".Rdata"))
 ```
 
-
 The last bit of code is not necessary but is a convenient way to store which versions of which libraries were actually used. If something works now but not in the future `install_version` (found in `library(devtools)`) can be used to install the older version of particular packages.  
+
+That\'s it. Of course, in practice you might write some code on the first survey that doesn\'t work for all of them. Pew, for example, seems to have formatted the survey date differently in the last two surveys which made me change the way displayed which survey we are looking at. But if the data are formatted consistently, a one time investment in modifying your `Rmd` and creating an extra `R` file can save massive amounts of time lost to error prone copying and pasting.
+
 
 
 
@@ -265,71 +271,71 @@ s$packages
 ```
 
 ```
- package     * version    date       source                            
- assertthat    0.2.0      2017-04-11 CRAN (R 3.4.0)                    
- backports     1.1.1      2017-09-25 CRAN (R 3.4.2)                    
- bindr         0.1        2016-11-13 CRAN (R 3.4.0)                    
- bindrcpp      0.2        2017-06-17 CRAN (R 3.4.0)                    
- broom         0.4.2      2017-02-13 CRAN (R 3.4.0)                    
- cellranger    1.1.0      2016-07-27 CRAN (R 3.4.0)                    
- clisymbols    1.2.0      2017-05-21 cran (@1.2.0)                     
- colorspace    1.3-2      2016-12-14 CRAN (R 3.4.0)                    
- digest        0.6.12     2017-01-27 CRAN (R 3.4.0)                    
- dplyr       * 0.7.4      2017-09-28 cran (@0.7.4)                     
- evaluate      0.10.1     2017-06-24 CRAN (R 3.4.1)                    
- forcats       0.2.0      2017-01-23 CRAN (R 3.4.0)                    
- foreign     * 0.8-69     2017-06-22 CRAN (R 3.4.2)                    
- formatR       1.5        2017-04-25 CRAN (R 3.4.0)                    
- ggplot2     * 2.2.1      2016-12-30 CRAN (R 3.4.0)                    
- glue          1.2.0      2017-10-29 CRAN (R 3.4.2)                    
- gtable        0.2.0      2016-02-26 CRAN (R 3.4.0)                    
- haven         1.1.0      2017-07-09 CRAN (R 3.4.1)                    
- highr         0.6        2016-05-09 CRAN (R 3.4.0)                    
- hms           0.3        2016-11-22 CRAN (R 3.4.0)                    
- htmltools     0.3.6      2017-04-28 CRAN (R 3.4.0)                    
- httpuv        1.3.5      2017-07-04 CRAN (R 3.4.1)                    
- httr          1.3.1      2017-08-20 cran (@1.3.1)                     
- jsonlite      1.5        2017-06-01 CRAN (R 3.4.0)                    
- knitr       * 1.17       2017-08-10 CRAN (R 3.4.1)                    
- labeling      0.3        2014-08-23 CRAN (R 3.4.0)                    
- lattice       0.20-35    2017-03-25 CRAN (R 3.4.2)                    
- lazyeval      0.2.1      2017-10-29 CRAN (R 3.4.2)                    
- lubridate     1.7.0      2017-10-29 CRAN (R 3.4.2)                    
- magrittr      1.5        2014-11-22 CRAN (R 3.4.0)                    
- mime          0.5        2016-07-07 CRAN (R 3.4.0)                    
- miniUI        0.1.1      2016-01-15 CRAN (R 3.4.0)                    
- mnormt        1.5-5      2016-10-15 CRAN (R 3.4.0)                    
- modelr        0.1.1      2017-07-24 CRAN (R 3.4.1)                    
- munsell       0.4.3      2016-02-13 CRAN (R 3.4.0)                    
- nlme          3.1-131    2017-02-06 CRAN (R 3.4.2)                    
- pacman      * 0.4.6      2017-05-14 CRAN (R 3.4.0)                    
- pkgconfig     2.0.1      2017-03-21 CRAN (R 3.4.0)                    
- plyr          1.8.4      2016-06-08 CRAN (R 3.4.0)                    
- psych         1.7.8      2017-09-09 CRAN (R 3.4.1)                    
- purrr       * 0.2.4      2017-10-18 CRAN (R 3.4.2)                    
- questionr   * 0.6.1      2017-06-20 CRAN (R 3.4.1)                    
- R6            2.2.2      2017-06-17 CRAN (R 3.4.0)                    
- Rcpp          0.12.13    2017-09-28 cran (@0.12.13)                   
- readr       * 1.1.1      2017-05-16 CRAN (R 3.4.0)                    
- readxl        1.0.0      2017-04-18 CRAN (R 3.4.0)                    
- reshape2      1.4.2      2016-10-22 CRAN (R 3.4.0)                    
- rlang         0.1.2      2017-08-09 CRAN (R 3.4.1)                    
- rmarkdown     1.6.0.9008 2017-10-30 Github (rstudio/rmarkdown@eb33d55)
- rprojroot     1.2        2017-01-16 CRAN (R 3.4.0)                    
- rstudioapi    0.7        2017-09-07 cran (@0.7)                       
- rvest         0.3.2      2016-06-17 CRAN (R 3.4.0)                    
- scales        0.5.0      2017-08-24 cran (@0.5.0)                     
- sessioninfo * 1.0.0      2017-06-21 CRAN (R 3.4.1)                    
- shiny         1.0.5      2017-08-23 cran (@1.0.5)                     
- stringi       1.1.5      2017-04-07 CRAN (R 3.4.0)                    
- stringr       1.2.0      2017-02-18 CRAN (R 3.4.0)                    
- tibble      * 1.3.4      2017-08-22 cran (@1.3.4)                     
- tidyr       * 0.7.2      2017-10-16 CRAN (R 3.4.2)                    
- tidyverse   * 1.1.1      2017-01-27 CRAN (R 3.4.0)                    
- withr         2.0.0      2017-10-25 Github (jimhester/withr@a43df66)  
- xml2          1.1.1      2017-01-24 CRAN (R 3.4.0)                    
- xtable        1.8-2      2016-02-05 CRAN (R 3.4.0)                    
- yaml          2.1.14     2016-11-12 CRAN (R 3.4.0)                    
+ package     * version date       source                          
+ assertthat    0.2.0   2017-04-11 CRAN (R 3.4.0)                  
+ backports     1.1.1   2017-09-25 CRAN (R 3.4.2)                  
+ bindr         0.1     2016-11-13 CRAN (R 3.4.0)                  
+ bindrcpp      0.2     2017-06-17 CRAN (R 3.4.0)                  
+ broom         0.4.2   2017-02-13 CRAN (R 3.4.0)                  
+ cellranger    1.1.0   2016-07-27 CRAN (R 3.4.0)                  
+ clisymbols    1.2.0   2017-05-21 cran (@1.2.0)                   
+ colorspace    1.3-2   2016-12-14 CRAN (R 3.4.0)                  
+ digest        0.6.12  2017-01-27 CRAN (R 3.4.0)                  
+ dplyr       * 0.7.4   2017-09-28 cran (@0.7.4)                   
+ evaluate      0.10.1  2017-06-24 CRAN (R 3.4.1)                  
+ forcats       0.2.0   2017-01-23 CRAN (R 3.4.0)                  
+ foreign     * 0.8-69  2017-06-22 CRAN (R 3.4.2)                  
+ formatR       1.5     2017-04-25 CRAN (R 3.4.0)                  
+ ggplot2     * 2.2.1   2016-12-30 CRAN (R 3.4.0)                  
+ glue          1.2.0   2017-10-29 CRAN (R 3.4.2)                  
+ gtable        0.2.0   2016-02-26 CRAN (R 3.4.0)                  
+ haven         1.1.0   2017-07-09 CRAN (R 3.4.1)                  
+ highr         0.6     2016-05-09 CRAN (R 3.4.0)                  
+ hms           0.3     2016-11-22 CRAN (R 3.4.0)                  
+ htmltools     0.3.6   2017-04-28 CRAN (R 3.4.0)                  
+ httpuv        1.3.5   2017-07-04 CRAN (R 3.4.1)                  
+ httr          1.3.1   2017-08-20 cran (@1.3.1)                   
+ jsonlite      1.5     2017-06-01 CRAN (R 3.4.0)                  
+ knitr       * 1.17    2017-08-10 CRAN (R 3.4.1)                  
+ labeling      0.3     2014-08-23 CRAN (R 3.4.0)                  
+ lattice       0.20-35 2017-03-25 CRAN (R 3.4.2)                  
+ lazyeval      0.2.1   2017-10-29 CRAN (R 3.4.2)                  
+ lubridate     1.7.0   2017-10-29 CRAN (R 3.4.2)                  
+ magrittr      1.5     2014-11-22 CRAN (R 3.4.0)                  
+ mime          0.5     2016-07-07 CRAN (R 3.4.0)                  
+ miniUI        0.1.1   2016-01-15 CRAN (R 3.4.0)                  
+ mnormt        1.5-5   2016-10-15 CRAN (R 3.4.0)                  
+ modelr        0.1.1   2017-07-24 CRAN (R 3.4.1)                  
+ munsell       0.4.3   2016-02-13 CRAN (R 3.4.0)                  
+ nlme          3.1-131 2017-02-06 CRAN (R 3.4.2)                  
+ pacman      * 0.4.6   2017-05-14 CRAN (R 3.4.0)                  
+ pkgconfig     2.0.1   2017-03-21 CRAN (R 3.4.0)                  
+ plyr          1.8.4   2016-06-08 CRAN (R 3.4.0)                  
+ psych         1.7.8   2017-09-09 CRAN (R 3.4.1)                  
+ purrr       * 0.2.4   2017-10-18 CRAN (R 3.4.2)                  
+ questionr   * 0.6.1   2017-06-20 CRAN (R 3.4.1)                  
+ R6            2.2.2   2017-06-17 CRAN (R 3.4.0)                  
+ Rcpp          0.12.13 2017-09-28 cran (@0.12.13)                 
+ readr       * 1.1.1   2017-05-16 CRAN (R 3.4.0)                  
+ readxl        1.0.0   2017-04-18 CRAN (R 3.4.0)                  
+ reshape2      1.4.2   2016-10-22 CRAN (R 3.4.0)                  
+ rlang         0.1.2   2017-08-09 CRAN (R 3.4.1)                  
+ rmarkdown     1.6     2017-06-15 CRAN (R 3.4.0)                  
+ rprojroot     1.2     2017-01-16 CRAN (R 3.4.0)                  
+ rstudioapi    0.7     2017-09-07 cran (@0.7)                     
+ rvest         0.3.2   2016-06-17 CRAN (R 3.4.0)                  
+ scales        0.5.0   2017-08-24 cran (@0.5.0)                   
+ sessioninfo * 1.0.0   2017-06-21 CRAN (R 3.4.1)                  
+ shiny         1.0.5   2017-08-23 cran (@1.0.5)                   
+ stringi       1.1.5   2017-04-07 CRAN (R 3.4.0)                  
+ stringr       1.2.0   2017-02-18 CRAN (R 3.4.0)                  
+ tibble      * 1.3.4   2017-08-22 cran (@1.3.4)                   
+ tidyr       * 0.7.2   2017-10-16 CRAN (R 3.4.2)                  
+ tidyverse   * 1.1.1   2017-01-27 CRAN (R 3.4.0)                  
+ withr         2.0.0   2017-10-25 Github (jimhester/withr@a43df66)
+ xml2          1.1.1   2017-01-24 CRAN (R 3.4.0)                  
+ xtable        1.8-2   2016-02-05 CRAN (R 3.4.0)                  
+ yaml          2.1.14  2016-11-12 CRAN (R 3.4.0)                  
 ```
 
 

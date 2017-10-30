@@ -2,9 +2,9 @@
 title: "Automating Summary of Surveys with RMarkdown"
 author: "Pete Mohanty"
 output:
-  pdf_document: default
   html_document:
     keep_md: yes
+  pdf_document: default
   word_document: default
 urlcolor: blue
 ---
@@ -121,7 +121,7 @@ PA
 
 Here is an example of a weighted crosstab. `knitr::kable` will create a table that's professional in appearance (when knit as `PDF`, `kable` takes the style of an academic journal).
 
-```{r}
+```{r, asis = FALSE}
 kable(wtd.table(survey$ideo, survey$sex, survey$weight)/nrow(survey), digits = 2)
 ```
 
