@@ -1,26 +1,24 @@
 # Automating Summary of Surveys with RMarkdown
-## Pete Mohanty  
+Pete Mohanty  
 
-This guide is shows how to automate the summary of surveys with `R` and `RMarkdown` using `RStudio`. The motivation is twofold: *efficiency* (minimize copy and pasting, maximize the number of data sets that any given code can analyze) and *reproducibility* (minimize the effort to recreate scientific results, maximize the number of people and computers that can recreate the findings).
+This guide is shows how to automate the summary of surveys with `R` and `RMarkdown` using `RStudio`. The basic setup is to write an `Rmd` file that will serve as a template and then a short script that (using `library(knitr)`) loops over each data file. This is great for portions of the document that don't change (e.g., "the survey shows substantial partisan polarization"). The `render` function then turns the `Rmd` into a `PDF` (or `HTML` or `docx` as desired), taking additional metadata about the data set as a "parameter" ([RStudio guide](http://rmarkdown.rstudio.com/developer_parameterized_reports.html)). There are countless ways to summarize a survey in `R`. This guide will show a few basics with `ggplot` and `questionr` but focus on the overall workflow (file management, etc.).  
 
-The basic setup is to write an `Rmd` file that will serve as a template and then a short script that (using `library(knitr)`) loops over each data file. This is great for portions of the document that don't change (e.g., "the survey shows substantial partisan polarization"). The `render` function then turns the `Rmd` into a `PDF` (or `HTML` or `docx` as desired), taking additional metadata about the data set as a "parameter" ([RStudio guide](http://rmarkdown.rstudio.com/developer_parameterized_reports.html)). There are countless ways to summarize a survey in `R`. This guide will show a few basics with `ggplot` and `questionr` but focus on the overall workflow (file management, etc.).  
-
-Following the instructions here, you should be able to reproduce all four reports (and in principle, many more) despite only writing code to clean one survey. Almost all of the code that you need is found in this file, though some additional data cleaning code is found only in `pewpoliticaltemplate.Rmd`. The file that then loops over the available data sets is `pew_report_generator.R`. All code and resulting documents can be found in this [Github folder](https://github.com/rdrr1990/datascience101/edit/master/automating/).
+Following the instructions here, you should be able to reproduce all four reports (and in principle, many more) despite only writing code to clean one survey. Almost all of the code that you need is found in this file, though some additional data cleaning code is found only in `pewpoliticaltemplate.Rmd`. The file that then loops over the available data sets is `pew_report_generator.R`.
 
 
 # Software
 
-`RStudio`'s interface with `rmarkdown` is evolving rapidly. Installing the current `RStudio` is highly recommended, particularly for the previews of the R markdown code (this doc was created with `1.1.83`). (Here is my [install guide](stats101.stanford.edu), which includes links to tutorials and cheat sheets. For somewhat more advanced survey data cleaning, click [here](stats101.stanford.edu/R_skill_dRill.html).) Note that this document has been created with `Pandoc 1.19.2.4`, not the brand new `2.0`, which seems to have a few minor compability issues with `rmarkdown`.
+`RStudio`'s interface with `rmarkdown` is evolving rapidly. Installing the current `RStudio` is highly recommended, particularly for the previews of the R markdown code (this doc was created with `1.1.83`). (Here is my [install guide](stats101.stanford.edu), which includes links to tutorials and cheat sheets. For somewhat more advanced survey data cleaning, click [here](stats101.stanford.edu/R_skill_dRill.html).) 
 
-Even if you've knit R Markdowns in the past, your libraries may not be new enough to create parameterized reports. Install `pacman`, which has a convenience function `p_load` that smoothes package installation, loading, and maintenance.   
+Even if you've knit `Rmd`s in the past, your libraries may not be new enough to create parameterized reports. I recommend installing `pacman`, which has a convenience function `p_load` that smoothes package installation, loading, and maintenance. (The `Rmd` template calls `library(pacman)` and then uses `p_load()` to load all other packages.)   
 
 
 ```r
 install.packages("pacman")
-p_load(rmarkdown, knitr, foreign, questionr, tidyverse, update = TRUE)
+p_load(rmarkdown, knitr, foreign, scales, questionr, tidyverse, update = TRUE)
 ```
 
-Remember `PDF` requires `LaTeX` [(install links)](stats101.stanford.edu). By contrast, knitting to `docx` or `HTML` does not require `LaTeX`. Creating `pptx` is possible with `R` with `library(ReporteRs)`.
+Remember `PDF` requires `LaTeX` [(install links)](stats101.stanford.edu). By contrast, knitting to `docx` or `HTML` does not require `LaTeX`. Creating `pptx` is possible with `R` with `library(ReporteRs)` (and, of course, you can choose to produce HTML or Beamer slides with RMarkdown).
 
 # The Data
 
@@ -30,17 +28,19 @@ Download the four "political surveys" from Pew Research available [here](http://
 
 Three of my folders have intuitive names (`Jan16`, `Mar16`, and `Oct16`) but one of my folders picked up a lengthy name, `http___www.people-press.org_files_datasets_Aug16`. Don't worry about that.
 
-- Create a new folder, call it say `pewpolitical`
+- Create a new folder, call it say `automating`
 
 - Move all four folders into `pewpolitical`
 
 Please note I have no affiliation (past or present) with Pew Research. I simply think that they do great work and they make it relatively hassle free to get started with meaningful data sets.
 
-# The R Notebook (R Markdown) Template
+# The R Notebook (RMarkdown) Template
 
-In `RStudio`, create a new `RNotebook` and save it as `pewpoliticaltemplate.Rmd` in the `pewpolitical` folder you just created. This document will likely knit to `HTML` by default; hold down the `knit` button to change it to `PDF`. Add fields to the header as desired. Below find a sample header that automatically puts today's date on the document. 
+(RMarkdown ninjas can skip this section.)  
 
-Next add an `R` code chunk to `pewpoliticaltemplate.Rmd` to take care of background stuff like formatting. Though setting a working directory would not be needed just to knit the `Rmd`, it must be set by `knit::opts_knits$set(root.dir = '/path/to/pewpolitical/')` to automate document prep. (`setwd` isn't needed in the `Rmd` but setting the working directory separately in `Console` is recommended if you're still editing.)
+In `RStudio`, create a new `RNotebook` and save it as `pewpoliticaltemplate.Rmd` in the `automating` folder you just created. This document will likely knit to `HTML` by default; hold down the `knit` button to change it to `PDF`. Add fields to the header as desired. The sample header below automatically puts today's date on the document by parsing the expression next to `Date:` as `R` code. 
+
+Next add an `R` code chunk to `pewpoliticaltemplate.Rmd` to take care of background stuff like formatting. Though setting a working directory would not be needed just to knit the `Rmd`, it must be set by `knit::opts_knits$set(root.dir = '/path/to/automating/')` to automate document prep. (`setwd` isn't needed in the `Rmd` but setting the working directory separately in `Console` is recommended if you're still editing.)
 
 ![Initial Configuration](config.png)
 
@@ -49,11 +49,11 @@ Next add an `R` code chunk to `pewpoliticaltemplate.Rmd` to take care of backgro
 
 Now the default settings have been set and you don't need to worry about suppressing warnings and so on with each code chunk. You can of course change them case-by-case as you like. 
 
--- Unlike in `R`, when setting the format options for individual code chunks, you do need to type out the words `TRUE` and `FALSE` in full (as shown above in the first code chunk where supressing warnings is necessary before the defaults kick in). 
+-- Unlike in `R`, when setting the format options for individual code chunks (as shown above to suppress warnings before the defaults kick in), you do need to type out the words `TRUE` and `FALSE` in full. 
 
--- In this `Rmd`, by constrast, I've set the defaults to `echo = TRUE` and `tidy = TRUE` to display the R code more pleasingly.
+-- In this document, by constrast, I've set the defaults to `echo = TRUE` and `tidy = TRUE` to display the R code more pleasingly.
 
--- The setting `asis = TRUE` is very useful for professionally formatted tables (show below) but is not recommendable for raw R output of matrix and tables.
+-- The setting `asis = TRUE` is very useful for professionally formatted tables (show below) but is not recommendable for raw R output of matrix and tables. To make raw data frames display with `kable` by default, see [here](http://rmarkdown.rstudio.com/html_document_format.html).
 
 ### The Template
 
@@ -66,6 +66,11 @@ survey <- read.spss("Jan16/Jan16 public.sav", to.data.frame = TRUE)
 
 
 
+Summary stats can easily be inserted into the text like so.
+
+![Calling R In Line](intext.png)
+
+The template contains additional examples with survey weights (lengthier calculations should be done in blocks of code and then their result refered with that inline style).
 
 Here is a basic plot we might want, which reflects the survey weights. `facet_grid()` is used to create analogous plots for each party identification. The plot uses the slightly wonky syntax `y = (..count..)/sum(..count..)` to display the results as percentages rather than counts. Note some code that cleans the data (mostly shortening labels) is omitted for brevity but can be found [here](https://github.com/rdrr1990/datascience101/blob/master/automating/pewpoliticaltemplate.Rmd).
 
@@ -94,12 +99,12 @@ kable(wtd.table(survey$ideo, survey$sex, survey$weight)/nrow(survey), digits = 2
 
 |                  | Male| Female|
 |:-----------------|----:|------:|
-|Very conservative | 0.04|   0.03|
-|Conservative      | 0.14|   0.13|
-|Moderate          | 0.20|   0.20|
-|Liberal           | 0.08|   0.09|
-|Very liberal      | 0.03|   0.03|
-|DK*               | 0.02|   0.03|  
+|Very conservative | 0.13|   0.09|
+|Conservative      | 0.48|   0.42|
+|Moderate          | 0.48|   0.58|
+|Liberal           | 0.23|   0.28|
+|Very liberal      | 0.11|   0.13|
+|DK*               | 0.06|   0.05|
 
 Suppose we want to do many crosstabs. The syntax `survey$ideo` is widely used for convenience but `survey[["ideo"]]` will serve us better since it allow to work with vectors of variable names ([details from win-vector](http://www.win-vector.com/blog/2017/06/non-standard-evaluation-and-function-composition-in-r/)). Below, the first two calls to comparisons are identical but the final one is not because there is no variable "x" in the data frame `survey`.
 
@@ -129,7 +134,7 @@ identical(survey[[x]], survey$x)
 [1] FALSE
 ```
 
-So suppose we want weighted crosstabs for ideology and party id crossed by all question 20, 21, 22.. 30. Here is some code that will do that. 
+So suppose we want weighted crosstabs for ideology and party id crossed by all question 20, 21, 22.. 29. Here is some code that will do that. 
 
 
 ```r
@@ -246,11 +251,11 @@ session <- session_info()
 save(session, file = paste0("session", format(Sys.time(), "%m%d%Y"), ".Rdata"))
 ```
 
-The last bit of code is not necessary but is a convenient way to store which versions of which libraries were actually used. If something works now but not in the future `install_version` (found in `library(devtools)`) can be used to install the older version of particular packages.  
+That\'s it. Of course, in practice you might write some code on the first survey that doesn\'t work for all of them. Pew, for example, seems to have formatted the survey date differently in the last two surveys which made me change the way displayed which survey we are looking at. But if the data are formatted consistently, a one-time investment in modifying your `Rmd` and creating an extra `R` file can save massive amounts of time lost to error prone copying and pasting.
 
-That\'s it. Of course, in practice you might write some code on the first survey that doesn\'t work for all of them. Pew, for example, seems to have formatted the survey date differently in the last two surveys which made me change the way displayed which survey we are looking at. But if the data are formatted consistently, a one time investment in modifying your `Rmd` and creating an extra `R` file can save massive amounts of time lost to error prone copying and pasting.
+### A Little Version Control 
 
-
+The last bit of code is not necessary but is a convenient way to store which versions of which libraries were actually used on which version of R. If something works now but not in the future `install_version` (found in `library(devtools)`) can be used to install the older version of particular packages.  
 
 
 ```r
@@ -267,7 +272,7 @@ s$platform
  language (EN)                        
  collate  en_US.UTF-8                 
  tz       America/Los_Angeles         
- date     2017-10-30                  
+ date     2017-11-01                  
 ```
 
 ```r
