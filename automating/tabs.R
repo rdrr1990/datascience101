@@ -53,7 +53,7 @@ tabs <- function(dataframe, x, y = NULL, style = "percent",
     colnames(xtabs)[1] <- "Overall"
   }
   
-  return(if(style == "percent") apply(xtabs, c(1, 2), percent) else xtabs)
+  return(if(style == "percent") apply(xtabs, c(1, 2), scales::percent) else xtabs)
 }
 
 
