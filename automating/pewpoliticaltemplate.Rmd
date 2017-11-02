@@ -20,7 +20,7 @@ opts_chunk$set(warning = FALSE)                                     # warnings,
 opts_chunk$set(message = FALSE)                                     # messages,
 opts_chunk$set(comment = "")                                        # or ## before each line of R output.
 opts_chunk$set(results = "asis")                                    # enable kable() rendering inside loops, functions
-knitr::opts_knit$set(root.dir = '/users/mohanty/Desktop/pewpolitical/')
+knitr::opts_knit$set(root.dir = '/users/mohanty/Dropbox/git/ds101/automating/')
 ```
 
 
@@ -74,6 +74,11 @@ levels(survey$q1)[3] <- "Don't Know (VOL)"
 tmp <- as.character(survey$party)
 survey$party.clean <- ifelse(tmp %in% levels(survey$party)[1:3], tmp, "VOL: Other")
 
+survey$race <- survey$racethn
+levels(survey$race) <- c(levels(survey$race), "DK")
+survey$race[is.na(survey$race)] <- "DK"
+levels(survey$race) <- gsub(", non-Hisp", " (nH)", levels(survey$race)) 
+
 ```
 
 Presidential approval numbers that only look at approval among Democrats or Republicans since, in bad times for the President, people may stop identifying with either. Here is a graph that hopefully shows a more complete picture.
@@ -90,7 +95,18 @@ PA <- PA + scale_y_continuous(labels = scales::percent)
 PA
 ```
 
-Here's a whole bunch more. In each case q21, q22, ... q30 will be weighted and broken down by ideology and then party.
+
+# Multiple Crosstabs as Columns 
+
+Here is the data displayed in different fashion (crosstabs as additional columns).
+
+```{r}
+source("https://raw.githubusercontent.com/rdrr1990/datascience101/master/automating/tabs.R")
+kable(tabs(survey, "q1", c("sex", "race"), weight = "cellweight"))
+```
+
+### Additional Comparisons
+Here's a whole bunch more. In each case q21, q22, ... q29 will be weighted and broken down by ideology and then party.
 
 
 ```{r}

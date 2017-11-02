@@ -1,7 +1,7 @@
 library(pacman)
 p_load(knitr, rmarkdown) 
 
-setwd("/users/mohanty/Desktop/pewpolitical/")
+setwd("/users/mohanty/Dropbox/git/ds101/automating/")
 
 waves <- c("August 2016", "January 2016", "March 2016", "October 2016")
 

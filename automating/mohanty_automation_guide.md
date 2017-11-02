@@ -40,7 +40,7 @@ Please note I have no affiliation (past or present) with Pew Research. I simply 
 
 (RMarkdown ninjas can skip this section.)  
 
-In `RStudio`, create a new `RNotebook` and save it as `pewpoliticaltemplate.Rmd` in the `automating` folder you just created. This document will likely knit to `HTML` by default; hold down the `knit` button to change it to `PDF`. Add fields to the header as desired. The sample header below automatically puts today's date on the document by parsing the expression next to `Date:` as `R` code. 
+In `RStudio`, create a new `RNotebook` and save it as `pewpoliticaltemplate.Rmd` in the `automating` folder you just created. This document will likely knit to `HTML` by default; hold down the `knit` button to change it to `PDF`. Add fields to the header as desired. The sample header below automatically puts today's date on the document by parsing the expression next to `Date:` as `R` code. `classoption: landscape` may help with wide tables.
 
 Next add an `R` code chunk to `pewpoliticaltemplate.Rmd` to take care of background stuff like formatting. Though setting a working directory would not be needed just to knit the `Rmd`, the directory must be set by `knitr::opts_chunk$set(root.dir = '...')` to automate document prep. (`setwd` isn't needed in the `Rmd` but setting the working directory separately in `Console` is recommended if you're still editing.)
 
@@ -100,14 +100,14 @@ Here is an example of a weighted crosstab. `knitr::kable` will create a table th
 kable(wtd.table(survey$ideo, survey$sex, survey$weight)/nrow(survey), digits = 2)
 ```
 
-                     Male   Female
-------------------  -----  -------
-Very conservative    0.04     0.03
-Conservative         0.14     0.13
-Moderate             0.20     0.20
-Liberal              0.08     0.09
-Very liberal         0.03     0.03
-DK*                  0.02     0.03
+|                  | Male| Female|
+|:-----------------|----:|------:|
+|Very conservative | 0.12|   0.12|
+|Conservative      | 0.45|   0.37|
+|Moderate          | 0.47|   0.47|
+|Liberal           | 0.20|   0.31|
+|Very liberal      | 0.12|   0.12|
+|DK*               | 0.06|   0.06|
 
 Suppose we want to do many crosstabs. The syntax `survey$ideo` is widely used for convenience but `survey[["ideo"]]` will serve us better since it allow to work with vectors of variable names ([details from win-vector](http://www.win-vector.com/blog/2017/06/non-standard-evaluation-and-function-composition-in-r/)). Below, the first two calls to comparisons are identical but the final one is not because there is no variable "x" in the data frame `survey`.
 
@@ -137,7 +137,22 @@ identical(survey[[x]], survey$x)
 [1] FALSE
 ```
 
-So suppose we want weighted crosstabs for ideology and party id crossed by all question 20, 21, 22.. 29. Here is some code that will do that. 
+
+Suppose we want Presidential approval where the columns provide first overall approval and subsequent columns are crosstabs for various factors of interest (using the cell phone weights). I've written a convenience function called [tabs](https://github.com/rdrr1990/datascience101/blob/master/automating/tabs.R) that does this. Let me know what you think or if you think additional features would be better and I'll submit a pull request to `library(questionr)`.
+
+
+```r
+source("https://raw.githubusercontent.com/rdrr1990/datascience101/master/automating/tabs.R")
+kable(tabs(survey, "q1", c("sex", "race"), weight = "cellweight"))
+```
+
+|                 |Overall |Male  |Female |White (nH) |Black (nH) |Hispanic |Other  |DK     |
+|:----------------|:-------|:-----|:------|:----------|:----------|:--------|:------|:------|
+|Approve          |53%     |24%   |29.1%  |27.1%      |10.2%      |10.5%    |4.81%  |0.466% |
+|Disapprove       |42.3%   |23.3% |19%    |33.9%      |0.721%     |4.09%    |2.8%   |0.866% |
+|Don't Know (VOL) |4.64%   |2.19% |2.45%  |2.57%      |0.725%     |0.936%   |0.405% |0%     |
+
+Suppose we want weighted crosstabs for ideology and party id crossed by all question 20, 21, 22.. 29. Here is some code that will do that. 
 
 
 ```r
