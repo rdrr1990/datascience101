@@ -50,7 +50,7 @@ tabs <- function(dataframe, x, y = NULL, style = "percent",
       xtabs <- cbind(xtabs, 
                      if(style %in% c("percent", "proportion")) sumOne(out[[i]]) else out[[i]])
     } 
-    colnames(xtabs) <- "Overall"
+    colnames(xtabs)[1] <- "Overall"
   }
   
   return(if(style == "percent") apply(xtabs, c(1, 2), percent) else xtabs)
