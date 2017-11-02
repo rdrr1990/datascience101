@@ -31,6 +31,8 @@ tabs <- function(dataframe, x, y = NULL, style = "percent",
   xtabs <- wtd.table(dataframe[[x]], y = NULL, weights = dataframe[[weight]], 
                      normwt = normwt, na.rm = na.rm, na.show = na.show)
   
+  
+  
   if(style %in% c("percent", "proportion")){
     xtabs <- sumOne(xtabs)
   }
@@ -48,7 +50,7 @@ tabs <- function(dataframe, x, y = NULL, style = "percent",
       xtabs <- cbind(xtabs, 
                      if(style %in% c("percent", "proportion")) sumOne(out[[i]]) else out[[i]])
     } 
-    
+    colnames(xtabs) <- "Overall"
   }
   
   return(if(style == "percent") apply(xtabs, c(1, 2), percent) else xtabs)
