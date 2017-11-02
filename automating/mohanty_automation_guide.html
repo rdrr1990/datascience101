@@ -224,17 +224,9 @@ PA</code></pre>
 </tr>
 </tbody>
 </table>
-<p>Suppose we want to do many crosstabs. The syntax <code>survey$ideo</code> is widely used for convenience but <code>survey[[&quot;ideo&quot;]]</code> will serve us better since it allow to work with vectors of variable names (<a href="http://www.win-vector.com/blog/2017/06/non-standard-evaluation-and-function-composition-in-r/">details from win-vector</a>). Below, the first two calls to comparisons are identical but the final one is not because there is no variable “x” in the data frame <code>survey</code>.</p>
-<pre class="r"><code>identical(survey$ideo, survey[[&quot;ideo&quot;]])</code></pre>
-<pre><code>[1] TRUE</code></pre>
-<pre class="r"><code>x &lt;- &quot;ideo&quot;
-identical(survey[[x]], survey[[&quot;ideo&quot;]])</code></pre>
-<pre><code>[1] TRUE</code></pre>
-<pre class="r"><code>identical(survey[[x]], survey$x)</code></pre>
-<pre><code>[1] FALSE</code></pre>
 <p>Suppose we want Presidential approval where the columns provide first overall approval and subsequent columns are crosstabs for various factors of interest (using the cell phone weights). I’ve written a convenience function called <a href="https://github.com/rdrr1990/datascience101/blob/master/automating/tabs.R">tabs</a> that does this. Let me know what you think or if you think additional features would be better and I’ll submit a pull request to <code>library(questionr)</code>.</p>
 <pre class="r"><code>source(&quot;https://raw.githubusercontent.com/rdrr1990/datascience101/master/automating/tabs.R&quot;)
-kable(tabs(survey, &quot;q1&quot;, c(&quot;sex&quot;, &quot;racethn&quot;), weight = &quot;cellweight&quot;))</code></pre>
+kable(tabs(survey, &quot;q1&quot;, c(&quot;sex&quot;, &quot;race&quot;), weight = &quot;cellweight&quot;))</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -242,11 +234,11 @@ kable(tabs(survey, &quot;q1&quot;, c(&quot;sex&quot;, &quot;racethn&quot;), weig
 <th align="left">Overall</th>
 <th align="left">Male</th>
 <th align="left">Female</th>
-<th align="left">White non-Hispanic</th>
-<th align="left">Black non-Hispanic</th>
+<th align="left">White (nH)</th>
+<th align="left">Black (nH)</th>
 <th align="left">Hispanic</th>
 <th align="left">Other</th>
-<th align="left">Don’t know/Refused (VOL.)</th>
+<th align="left">DK*</th>
 </tr>
 </thead>
 <tbody>
@@ -285,7 +277,15 @@ kable(tabs(survey, &quot;q1&quot;, c(&quot;sex&quot;, &quot;racethn&quot;), weig
 </tr>
 </tbody>
 </table>
-<p>Suppose we want weighted crosstabs for ideology and party id crossed by all question 20, 21, 22.. 29. Here is some code that will do that.</p>
+<p>Suppose we want to do many crosstabs. The syntax <code>survey$ideo</code> is widely used for convenience but <code>survey[[&quot;ideo&quot;]]</code> will serve us better since it allow to work with vectors of variable names (<a href="http://www.win-vector.com/blog/2017/06/non-standard-evaluation-and-function-composition-in-r/">details from win-vector</a>). Below, the first two calls to comparisons are identical but the final one is not because there is no variable “x” in the data frame <code>survey</code>.</p>
+<pre class="r"><code>identical(survey$ideo, survey[[&quot;ideo&quot;]])</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<pre class="r"><code>x &lt;- &quot;ideo&quot;
+identical(survey[[x]], survey[[&quot;ideo&quot;]])</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<pre class="r"><code>identical(survey[[x]], survey$x)</code></pre>
+<pre><code>[1] FALSE</code></pre>
+<p>So say we want weighted crosstabs for ideology and party id crossed by all question 20, 21, 22.. 29. Here is some code that will do that.</p>
 <pre class="r"><code>x &lt;- names(survey)[grep(&quot;q2[[:digit:]]&quot;, names(survey))]
 x</code></pre>
 <pre><code> [1] &quot;q20&quot;  &quot;q21&quot;  &quot;q22a&quot; &quot;q22b&quot; &quot;q22c&quot; &quot;q22d&quot; &quot;q22e&quot; &quot;q22f&quot; &quot;q22g&quot; &quot;q22h&quot;

@@ -75,9 +75,8 @@ tmp <- as.character(survey$party)
 survey$party.clean <- ifelse(tmp %in% levels(survey$party)[1:3], tmp, "VOL: Other")
 
 survey$race <- survey$racethn
-levels(survey$race) <- c(levels(survey$race), "DK")
-survey$race[is.na(survey$race)] <- "DK"
-levels(survey$race) <- gsub(", non-Hisp", " (nH)", levels(survey$race)) 
+levels(survey$race) <- gsub(" non-Hispanic", " (nH)", levels(survey$race)) 
+levels(survey$race)[5] <- "DK*"
 
 ```
 

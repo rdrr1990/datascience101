@@ -109,6 +109,20 @@ kable(wtd.table(survey$ideo, survey$sex, survey$weight)/nrow(survey), digits = 2
 |Very liberal      | 0.12|   0.12|
 |DK*               | 0.06|   0.06|
 
+Suppose we want Presidential approval where the columns provide first overall approval and subsequent columns are crosstabs for various factors of interest (using the cell phone weights). I've written a convenience function called [tabs](https://github.com/rdrr1990/datascience101/blob/master/automating/tabs.R) that does this. Let me know what you think or if you think additional features would be better and I'll submit a pull request to `library(questionr)`.
+
+
+```r
+source("https://raw.githubusercontent.com/rdrr1990/datascience101/master/automating/tabs.R")
+kable(tabs(survey, "q1", c("sex", "race"), weight = "cellweight"))
+```
+
+|                 |Overall |Male  |Female |White, non-Hisp |Black, non-Hisp |Hispanic |Other  |DK* |
+|:----------------|:-------|:-----|:------|:---------------|:---------------|:--------|:------|:---|
+|Approve          |53%     |24%   |29.1%  |27.4%           |10.3%           |10.7%    |4.87%  |0%  |
+|Disapprove       |42.3%   |23.3% |19%    |34.3%           |0.73%           |4.14%    |2.84%  |0%  |
+|Don't Know (VOL) |4.64%   |2.19% |2.45%  |2.61%           |0.735%          |0.949%   |0.411% |0%  |
+
 Suppose we want to do many crosstabs. The syntax `survey$ideo` is widely used for convenience but `survey[["ideo"]]` will serve us better since it allow to work with vectors of variable names ([details from win-vector](http://www.win-vector.com/blog/2017/06/non-standard-evaluation-and-function-composition-in-r/)). Below, the first two calls to comparisons are identical but the final one is not because there is no variable "x" in the data frame `survey`.
 
 
@@ -138,21 +152,7 @@ identical(survey[[x]], survey$x)
 ```
 
 
-Suppose we want Presidential approval where the columns provide first overall approval and subsequent columns are crosstabs for various factors of interest (using the cell phone weights). I've written a convenience function called [tabs](https://github.com/rdrr1990/datascience101/blob/master/automating/tabs.R) that does this. Let me know what you think or if you think additional features would be better and I'll submit a pull request to `library(questionr)`.
-
-
-```r
-source("https://raw.githubusercontent.com/rdrr1990/datascience101/master/automating/tabs.R")
-kable(tabs(survey, "q1", c("sex", "race"), weight = "cellweight"))
-```
-
-|                 |Overall |Male  |Female |White (nH) |Black (nH) |Hispanic |Other  |DK     |
-|:----------------|:-------|:-----|:------|:----------|:----------|:--------|:------|:------|
-|Approve          |53%     |24%   |29.1%  |27.1%      |10.2%      |10.5%    |4.81%  |0.466% |
-|Disapprove       |42.3%   |23.3% |19%    |33.9%      |0.721%     |4.09%    |2.8%   |0.866% |
-|Don't Know (VOL) |4.64%   |2.19% |2.45%  |2.57%      |0.725%     |0.936%   |0.405% |0%     |
-
-Suppose we want weighted crosstabs for ideology and party id crossed by all question 20, 21, 22.. 29. Here is some code that will do that. 
+So say we want weighted crosstabs for ideology and party id crossed by all question 20, 21, 22.. 29. Here is some code that will do that. 
 
 
 ```r
