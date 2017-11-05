@@ -1,12 +1,7 @@
 ---
 title: "Automating Summary of Surveys with RMarkdown"
 author: "Pete Mohanty"
-output:
-  html_document:
-    keep_md: yes
-  pdf_document: default
-  word_document: default
-urlcolor: blue
+output: github_document
 ---
 
 This guide shows how to automate the summary of surveys with `R` and `RMarkdown` using `RStudio`. This is great for portions of the document that don't change (e.g., "the survey shows substantial partisan polarization"). The motivation is really twofold: *efficiency* (maximize the reusabililty of code, minimize copy and pasting errors) and *reproducability* (maximize the number of people and computers that can reproduce findings).
@@ -20,7 +15,7 @@ There are countless ways to summarize a survey in `R`. This guide will show a fe
 
 `RStudio`'s interface with `rmarkdown` is evolving rapidly. Installing the current `RStudio` is highly recommended, particularly for the previews of the RMarkdown code (this doc was created with `1.1.83`). (Here is my [install guide](stats101.stanford.edu), which includes links to tutorials and cheat sheets. For somewhat more advanced survey data cleaning, click [here](stats101.stanford.edu/R_skill_dRill.html).) 
 
-Even if you've knit `Rmd`s in the past, your libraries may not be new enough to create parameterized reports. I recommend installing `pacman`, which has a convenience function `p_load` that smoothes package installation, loading, and maintenance. (The `Rmd` template calls `library(pacman)` and then uses `p_load()` to load all other packages, which is what I'd recommend particularly if you are collaborating say on Dropbox.)   
+Even if you've knit `Rmd` already, your libraries may not be new enough to create parameterized reports. I recommend installing `pacman`, which has a convenience function `p_load` that smoothes package installation, loading, and maintenance. (The `Rmd` template calls `library(pacman)` and then uses `p_load()` to load all other packages, which is what I'd recommend particularly if you are collaborating say on Dropbox.)   
 
 ```{r, eval = FALSE}
 install.packages("pacman")
@@ -47,7 +42,7 @@ Please note I have no affiliation (past or present) with Pew Research. I simply 
 
 (RMarkdown ninjas can skip this section.)  
 
-In `RStudio`, create a new `RNotebook` and save it as `pewpoliticaltemplate.Rmd` in the `automating` folder you just created. This document will likely knit to `HTML` by default; hold down the `knit` button to change it to `PDF`. Add fields to the header as desired. The sample header below automatically puts today's date on the document by parsing the expression next to `Date:` as `R` code. `classoption: landscape` may help with wide tables.
+In `RStudio`, create a new `RNotebook` and save it as `pewpoliticaltemplate.Rmd` in the `automating` folder you just created. This document will likely knit to `HTML` by default; hold down the `knit` button to change it to `PDF`. Add fields to the header as desired. The sample header below automatically puts today's date on the document by parsing the expression next to `Date:` as `R` code. `classoption: landscape` may help with wide tables. You can also specify the file that contains your bibliography in several formats such as `BibTex` and `EndNote` [citation details](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html).
 
 Next add an `R` code chunk to `pewpoliticaltemplate.Rmd` to take care of background stuff like formatting. Though setting a working directory would not be needed just to knit the `Rmd`, the directory must be set by `knitr::opts_chunk$set(root.dir = '...')` to automate document prep. (`setwd` isn't needed in the `Rmd` but setting the working directory separately in `Console` is recommended if you're still editing.)
 
@@ -70,7 +65,7 @@ The play button at the top right gives a preview of the code's output, which is 
 
 -- Unlike in `R`, when setting the format options for individual code chunks (as shown above to suppress warnings before the defaults kick in), you do need to type out the words `TRUE` and `FALSE` in full. 
 
--- In this document, by constrast, I've set the defaults to `echo = TRUE` and `tidy = TRUE` to display the R code more pleasingly.
+-- Unlike the template, in this doc, I've set the defaults to `echo = TRUE` and `tidy = TRUE` to display the `R` code more pleasingly.
 
 -- The setting `asis = TRUE` is very useful for professionally formatted tables (show below) but is not recommendable for raw R output of matrix and tables. To make raw data frames display with `kable` by default, see [here](http://rmarkdown.rstudio.com/html_document_format.html).
 
@@ -251,7 +246,7 @@ session <- session_info()
 save(session, file = paste0("session", format(Sys.time(), '%m%d%Y'), ".Rdata"))
 ```
 
-That\'s it. Of course, in practice you might write some code on the first survey that doesn\'t work for all of them. Pew, for example, seems to have formatted the survey date differently in the last two surveys which made me change the way displayed which survey we are looking at. But if the data are formatted consistently, a one-time investment in modifying your `Rmd` and creating an extra `R` file can save massive amounts of time lost to error prone copying and pasting.
+That\'s it. Of course, in practice you might write some code on the first survey that doesn\'t work for all of them. Pew, for example, seems to have formatted the survey date differently in the last two surveys which made me make a few changes. But if the data are formatted consistently, a one-time investment in modifying your `Rmd` and creating an extra `R` file can save massive amounts of time lost to error prone copying and pasting.
 
 ### A Little Version Control 
 

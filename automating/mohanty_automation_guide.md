@@ -1,73 +1,70 @@
-# Automating Summary of Surveys with RMarkdown
-Pete Mohanty  
+Automating Summary of Surveys with RMarkdown
+================
+Pete Mohanty
 
 This guide shows how to automate the summary of surveys with `R` and `RMarkdown` using `RStudio`. This is great for portions of the document that don't change (e.g., "the survey shows substantial partisan polarization"). The motivation is really twofold: *efficiency* (maximize the reusabililty of code, minimize copy and pasting errors) and *reproducability* (maximize the number of people and computers that can reproduce findings).
 
-The basic setup is to write an `Rmd` file that will serve as a template and then a short `R` script that loops over each data file (using `library(knitr)`). The `render` function then turns the `Rmd` into a `PDF` (or `HTML` or `docx` documents or slides as desired) by taking (file) metadata as a [parameter](http://rmarkdown.rstudio.com/developer_parameterized_reports.html). 
+The basic setup is to write an `Rmd` file that will serve as a template and then a short `R` script that loops over each data file (using `library(knitr)`). The `render` function then turns the `Rmd` into a `PDF` (or `HTML` or `docx` documents or slides as desired) by taking (file) metadata as a [parameter](http://rmarkdown.rstudio.com/developer_parameterized_reports.html).
 
 There are countless ways to summarize a survey in `R`. This guide will show a few basics with `ggplot` and `questionr` but focus on the overall workflow (file management, etc.). Following the instructions here, you should be able to reproduce all four reports (and in principle, many more) despite only writing code to clean one survey. Most of the code is displayed in this document but everything you need is `pewpoliticaltemplate.Rmd` and `pew_report_generator.R`. All code, as well the outputted documents, can be found [here](https://github.com/rdrr1990/datascience101/tree/master/automating).
 
+Software
+========
 
-# Software
+`RStudio`'s interface with `rmarkdown` is evolving rapidly. Installing the current `RStudio` is highly recommended, particularly for the previews of the RMarkdown code (this doc was created with `1.1.83`). (Here is my [install guide](stats101.stanford.edu), which includes links to tutorials and cheat sheets. For somewhat more advanced survey data cleaning, click [here](stats101.stanford.edu/R_skill_dRill.html).)
 
-`RStudio`'s interface with `rmarkdown` is evolving rapidly. Installing the current `RStudio` is highly recommended, particularly for the previews of the RMarkdown code (this doc was created with `1.1.83`). (Here is my [install guide](stats101.stanford.edu), which includes links to tutorials and cheat sheets. For somewhat more advanced survey data cleaning, click [here](stats101.stanford.edu/R_skill_dRill.html).) 
+Even if you've knit `Rmd` already, your libraries may not be new enough to create parameterized reports. I recommend installing `pacman`, which has a convenience function `p_load` that smoothes package installation, loading, and maintenance. (The `Rmd` template calls `library(pacman)` and then uses `p_load()` to load all other packages, which is what I'd recommend particularly if you are collaborating say on Dropbox.)
 
-Even if you've knit `Rmd`s in the past, your libraries may not be new enough to create parameterized reports. I recommend installing `pacman`, which has a convenience function `p_load` that smoothes package installation, loading, and maintenance. (The `Rmd` template calls `library(pacman)` and then uses `p_load()` to load all other packages, which is what I'd recommend particularly if you are collaborating say on Dropbox.)   
-
-
-```r
+``` r
 install.packages("pacman")
 p_load(rmarkdown, knitr, foreign, scales, questionr, tidyverse, update = TRUE)
 ```
 
 Remember `PDF` requires `LaTeX` [(install links)](stats101.stanford.edu). By contrast, knitting to `docx` or `HTML` does not require `LaTeX`. Creating `pptx` is possible with `R` with `library(ReporteRs)` (and, of course, you can choose to produce HTML or Beamer slides with RMarkdown).
 
-# The Data
+The Data
+========
 
 Download the four "political surveys" from Pew Research available [here](http://www.people-press.org/datasets/2016/) (i.e., January, March, August, and October 2016). You may recall, some politics happened in 2016.
 
-- If need be, decompress each `zip` folder.
+-   If need be, decompress each `zip` folder.
 
 Three of my folders have intuitive names (`Jan16`, `Mar16`, and `Oct16`) but one of my folders picked up a lengthy name, `http___www.people-press.org_files_datasets_Aug16`. Don't worry about that.
 
-- Create a new folder, call it say `automating`
+-   Create a new folder, call it say `automating`
 
-- Move all four data folders into `automating`
+-   Move all four data folders into `automating`
 
 Please note I have no affiliation (past or present) with Pew Research. I simply think that they do great work and they make it relatively hassle free to get started with meaningful data sets.
 
-# The R Notebook (RMarkdown) Template
+The R Notebook (RMarkdown) Template
+===================================
 
-(RMarkdown ninjas can skip this section.)  
+(RMarkdown ninjas can skip this section.)
 
-In `RStudio`, create a new `RNotebook` and save it as `pewpoliticaltemplate.Rmd` in the `automating` folder you just created. This document will likely knit to `HTML` by default; hold down the `knit` button to change it to `PDF`. Add fields to the header as desired. The sample header below automatically puts today's date on the document by parsing the expression next to `Date:` as `R` code. `classoption: landscape` may help with wide tables.
+In `RStudio`, create a new `RNotebook` and save it as `pewpoliticaltemplate.Rmd` in the `automating` folder you just created. This document will likely knit to `HTML` by default; hold down the `knit` button to change it to `PDF`. Add fields to the header as desired. The sample header below automatically puts today's date on the document by parsing the expression next to `Date:` as `R` code. `classoption: landscape` may help with wide tables. You can also specify the file that contains your bibliography in several formats such as `BibTex` and `EndNote` [citation details](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html).
 
 Next add an `R` code chunk to `pewpoliticaltemplate.Rmd` to take care of background stuff like formatting. Though setting a working directory would not be needed just to knit the `Rmd`, the directory must be set by `knitr::opts_chunk$set(root.dir = '...')` to automate document prep. (`setwd` isn't needed in the `Rmd` but setting the working directory separately in `Console` is recommended if you're still editing.)
 
 ![Initial Configuration](config.png)
 
-
-
 The play button at the top right gives a preview of the code's output, which is handy. Also, if some part of the analysis is very lengthy, you can only run that one once and then tinker with the graphics in a separate block.
 
--- Now the default settings have been set and you don't need to worry about suppressing warnings and so on with each code chunk. You can of course change them case-by-case as you like. 
+-- Now the default settings have been set and you don't need to worry about suppressing warnings and so on with each code chunk. You can of course change them case-by-case as you like.
 
--- Unlike in `R`, when setting the format options for individual code chunks (as shown above to suppress warnings before the defaults kick in), you do need to type out the words `TRUE` and `FALSE` in full. 
+-- Unlike in `R`, when setting the format options for individual code chunks (as shown above to suppress warnings before the defaults kick in), you do need to type out the words `TRUE` and `FALSE` in full.
 
--- In this document, by constrast, I've set the defaults to `echo = TRUE` and `tidy = TRUE` to display the R code more pleasingly.
+-- Unlike the template, in this doc, I've set the defaults to `echo = TRUE` and `tidy = TRUE` to display the `R` code more pleasingly.
 
 -- The setting `asis = TRUE` is very useful for professionally formatted tables (show below) but is not recommendable for raw R output of matrix and tables. To make raw data frames display with `kable` by default, see [here](http://rmarkdown.rstudio.com/html_document_format.html).
 
 ### The Template
 
-I find it easiest to write a fully working example and then make little changes as needed so that `knitr::render()` can loop over the data sets. First things first. 
+I find it easiest to write a fully working example and then make little changes as needed so that `knitr::render()` can loop over the data sets. First things first.
 
-
-```r
+``` r
 survey <- read.spss("Jan16/Jan16 public.sav", to.data.frame = TRUE)
 ```
-
-
 
 Summary stats can easily be inserted into the text like so.
 
@@ -77,8 +74,7 @@ The template contains additional examples with survey weights (lengthier calcula
 
 Here is a basic plot we might want, which reflects the survey weights. `facet_grid()` is used to create analogous plots for each party identification. The plot uses the slightly wonky syntax `y = (..count..)/sum(..count..)` to display the results as percentages rather than counts. Note some code that cleans the data (mostly shortening labels) is omitted for brevity but can be found [here](https://github.com/rdrr1990/datascience101/blob/master/automating/pewpoliticaltemplate.Rmd).
 
-
-```r
+``` r
 PA <- ggplot(survey) + theme_minimal()
 PA <- PA + geom_bar(aes(q1, y = (..count..)/sum(..count..), weight = weight, 
     fill = q1))
@@ -89,88 +85,72 @@ PA <- PA + scale_y_continuous(labels = scales::percent)
 PA
 ```
 
-![](mohanty_automation_guide_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
-
-\newpage
+![](mohanty_automation_guide_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-1.png)
 
 Here is an example of a weighted crosstab. `knitr::kable` will create a table that's professional in appearance (when knit as `PDF`, `kable` takes the style of an academic journal).
 
-
-```r
+``` r
 kable(wtd.table(survey$ideo, survey$sex, survey$weight)/nrow(survey), digits = 2)
 ```
 
-|                  | Male| Female|
-|:-----------------|----:|------:|
-|Very conservative | 0.12|   0.12|
-|Conservative      | 0.45|   0.37|
-|Moderate          | 0.47|   0.47|
-|Liberal           | 0.20|   0.31|
-|Very liberal      | 0.12|   0.12|
-|DK*               | 0.06|   0.06|
+|                   |  Male|  Female|
+|-------------------|-----:|-------:|
+| Very conservative |  0.04|    0.03|
+| Conservative      |  0.14|    0.13|
+| Moderate          |  0.20|    0.20|
+| Liberal           |  0.08|    0.09|
+| Very liberal      |  0.03|    0.03|
+| DK\*              |  0.02|    0.03|
 
 Suppose we want Presidential approval where the columns provide first overall approval and subsequent columns are crosstabs for various factors of interest (using the cell phone weights). I've written a convenience function called [tabs](https://github.com/rdrr1990/datascience101/blob/master/automating/tabs.R) that does this. Let me know what you think or if you think additional features would be better and I'll submit a pull request to `library(questionr)`.
 
-
-```r
+``` r
 source("https://raw.githubusercontent.com/rdrr1990/datascience101/master/automating/tabs.R")
 kable(tabs(survey, "q1", c("sex", "race"), weight = "cellweight"))
 ```
 
-|                 |Overall |Male  |Female |White, non-Hisp |Black, non-Hisp |Hispanic |Other  |DK* |
-|:----------------|:-------|:-----|:------|:---------------|:---------------|:--------|:------|:---|
-|Approve          |53%     |24%   |29.1%  |27.4%           |10.3%           |10.7%    |4.87%  |0%  |
-|Disapprove       |42.3%   |23.3% |19%    |34.3%           |0.73%           |4.14%    |2.84%  |0%  |
-|Don't Know (VOL) |4.64%   |2.19% |2.45%  |2.61%           |0.735%          |0.949%   |0.411% |0%  |
+|                  | Overall | Male  | Female | White (nH) | Black (nH) | Hispanic | Other  | DK\*   |
+|------------------|:--------|:------|:-------|:-----------|:-----------|:---------|:-------|:-------|
+| Approve          | 45.6%   | 21.3% | 24.2%  | 20.4%      | 9.48%      | 10.2%    | 4.97%  | 0.443% |
+| Disapprove       | 48.5%   | 25.5% | 23%    | 39.6%      | 1.33%      | 3.95%    | 2.53%  | 1.12%  |
+| Don't Know (VOL) | 5.94%   | 2.67% | 3.27%  | 3.39%      | 0.646%     | 1.14%    | 0.489% | 0.269% |
 
 Suppose we want to do many crosstabs. The syntax `survey$ideo` is widely used for convenience but `survey[["ideo"]]` will serve us better since it allow to work with vectors of variable names ([details from win-vector](http://www.win-vector.com/blog/2017/06/non-standard-evaluation-and-function-composition-in-r/)). Below, the first two calls to comparisons are identical but the final one is not because there is no variable "x" in the data frame `survey`.
 
-
-```r
+``` r
 identical(survey$ideo, survey[["ideo"]])
 ```
 
-```
-[1] TRUE
-```
+    [1] TRUE
 
-```r
+``` r
 x <- "ideo"
 identical(survey[[x]], survey[["ideo"]])
 ```
 
-```
-[1] TRUE
-```
+    [1] TRUE
 
-```r
+``` r
 identical(survey[[x]], survey$x)
 ```
 
-```
-[1] FALSE
-```
+    [1] FALSE
 
+So say we want weighted crosstabs for ideology and party id crossed by all question 20, 21, 22.. 29. Here is some code that will do that.
 
-So say we want weighted crosstabs for ideology and party id crossed by all question 20, 21, 22.. 29. Here is some code that will do that. 
-
-
-```r
+``` r
 x <- names(survey)[grep("q2[[:digit:]]", names(survey))]
 x
 ```
 
-```
- [1] "q20"  "q21"  "q22a" "q22b" "q22c" "q22d" "q22e" "q22f" "q22g" "q22h"
-[11] "q22i" "q25"  "q26"  "q27"  "q28" 
-```
+     [1] "q20"  "q21"  "q22a" "q22b" "q22c" "q22d" "q22e" "q22f" "q22g" "q22h"
+    [11] "q22i" "q25"  "q26"  "q27"  "q28" 
 
-```r
+``` r
 y <- c("ideo", "party")
 ```
 
-
-```r
+``` r
 for (i in x) {
     for (j in y) {
         cat("\nWeighted proportions for", i, "broken down by", j, "\n")
@@ -184,23 +164,22 @@ for (i in x) {
 
 A few notes:
 
-  -- This code will only work with the `asis` setting (shown above) that lets `knitr` interpret the output of print(kable()) as something to render (rather just Markdown code to display that could be copy and pastied elsewhere).  
-  
-  -- Ideally one would have a `csv` or `data.frame` of the questions and display the as loop switched questions. In this case, the questionnaire is in a `docx` and so `library(docxtrackr)` may help.  
-  
-  -- Rather than a nested loop, one would likely prefer to pick a question, loop over the demographic and ideological categories for the crosstabs, and then insert commentary and overview.  
-  
-  -- The outer loops makes a new page each time it is done with the inner loop with `cat("\\newpage"))`, which is specific to making `PDF`s. Extra line breaks `\n` are needed to break out of the table formatting and keep code and text separate. A different approach to page breaks is needed [for docx](https://stackoverflow.com/questions/24672111/how-to-add-a-page-break-in-word-document-generated-by-rstudio-markdown).
+-- This code will only work with the `asis` setting (shown above) that lets `knitr` interpret the output of print(kable()) as something to render (rather just Markdown code to display that could be copy and pastied elsewhere).
 
-# Adapting the Template with Parameters
+-- Ideally one would have a `csv` or `data.frame` of the questions and display the as loop switched questions. In this case, the questionnaire is in a `docx` and so `library(docxtrackr)` may help.
+
+-- Rather than a nested loop, one would likely prefer to pick a question, loop over the demographic and ideological categories for the crosstabs, and then insert commentary and overview.
+
+-- The outer loops makes a new page each time it is done with the inner loop with `cat("\\newpage"))`, which is specific to making `PDF`s. Extra line breaks `\n` are needed to break out of the table formatting and keep code and text separate. A different approach to page breaks is needed [for docx](https://stackoverflow.com/questions/24672111/how-to-add-a-page-break-in-word-document-generated-by-rstudio-markdown).
+
+Adapting the Template with Parameters
+=====================================
 
 The next step is to add a [parameter](http://rmarkdown.rstudio.com/developer_parameterized_reports.html) with any variables you need. The parameters will be controlled by the `R` script discussed below. There is of course quite a bit of choice as to what is controlled by which file. Add the following to the end of the header of `pewpoliticaltemplate.Rmd`:
 
-```
-params:
-  spssfile: !r  1
-  surveywave: !r 2016
-```
+    params:
+      spssfile: !r  1
+      surveywave: !r 2016
 
 ![RMarkdown Header with Parameters](newheader.png)
 
@@ -208,51 +187,46 @@ That creates variables `params$spssfile` and `params$surveywave` that can be con
 
 Now make any changes to `Rmd` template. For example, in the `ggplot` code...
 
-
-```r
+``` r
 PA <- PA + ggtitle(paste("Presidential Approval:", params$surveywave))
 ```
 
-
 Notice we can get a list of all the `spss` files like so:
 
-
-```r
+``` r
 dir(pattern = "sav", recursive = TRUE)
 ```
 
-```
-[1] "http___www.people-press.org_files_datasets_Aug16/Aug16 public.sav"
-[2] "Jan16/Jan16 public.sav"                                           
-[3] "March16/March16 public.sav"                                       
-[4] "Oct16/Oct16 public.sav"                                           
-```
+    [1] "http___www.people-press.org_files_datasets_Aug16/Aug16 public.sav"
+    [2] "Jan16/Jan16 public.sav"                                           
+    [3] "March16/March16 public.sav"                                       
+    [4] "Oct16/Oct16 public.sav"                                           
+
 or in this case
 
-```r
+``` r
 dir(pattern = "public.sav", recursive = TRUE)
 ```
 
-```
-[1] "http___www.people-press.org_files_datasets_Aug16/Aug16 public.sav"
-[2] "Jan16/Jan16 public.sav"                                           
-[3] "March16/March16 public.sav"                                       
-[4] "Oct16/Oct16 public.sav"                                           
-```
-I recommend making the pattern as specific as possible in case you or your collaborators add other `spss` files with similar names. To use regular expressions to specify more complicated patterns, see [here](https://rstudio-pubs-static.s3.amazonaws.com/74603_76cd14d5983f47408fdf0b323550b846.html). 
+    [1] "http___www.people-press.org_files_datasets_Aug16/Aug16 public.sav"
+    [2] "Jan16/Jan16 public.sav"                                           
+    [3] "March16/March16 public.sav"                                       
+    [4] "Oct16/Oct16 public.sav"                                           
+
+I recommend making the pattern as specific as possible in case you or your collaborators add other `spss` files with similar names. To use regular expressions to specify more complicated patterns, see [here](https://rstudio-pubs-static.s3.amazonaws.com/74603_76cd14d5983f47408fdf0b323550b846.html).
 
 Now back to editing `pewpoliticaltemplate.Rmd`...
 
 ![Reading Data given Parameters](newreadingdata.png)
 
-Knit the file to see how it looks with these default settings; that\'s it for this portion.
+Knit the file to see how it looks with these default settings; that's it for this portion.
 
-# Automating with knitr
-  
-Now create a new `R` script; mine\'s called `pew_report_generator.R`. It\'s just a simple loop that tells which data set to grab as well as the label to pass to the `Rmd`. Note that the labels appear in alphabetical rather than chronological order as a function of the way that the `Rmd` happens to find the files.
+Automating with knitr
+=====================
 
+Now create a new `R` script; mine's called `pew_report_generator.R`. It's just a simple loop that tells which data set to grab as well as the label to pass to the `Rmd`. Note that the labels appear in alphabetical rather than chronological order as a function of the way that the `Rmd` happens to find the files.
 
-```r
+``` r
 library(pacman)
 p_load(knitr, rmarkdown, sessioninfo)
 
@@ -269,103 +243,93 @@ session <- session_info()
 save(session, file = paste0("session", format(Sys.time(), "%m%d%Y"), ".Rdata"))
 ```
 
-That\'s it. Of course, in practice you might write some code on the first survey that doesn\'t work for all of them. Pew, for example, seems to have formatted the survey date differently in the last two surveys which made me change the way displayed which survey we are looking at. But if the data are formatted consistently, a one-time investment in modifying your `Rmd` and creating an extra `R` file can save massive amounts of time lost to error prone copying and pasting.
+That's it. Of course, in practice you might write some code on the first survey that doesn't work for all of them. Pew, for example, seems to have formatted the survey date differently in the last two surveys which made me make a few changes. But if the data are formatted consistently, a one-time investment in modifying your `Rmd` and creating an extra `R` file can save massive amounts of time lost to error prone copying and pasting.
 
-### A Little Version Control 
+### A Little Version Control
 
-The last bit of code is not necessary but is a convenient way to store which versions of which libraries were actually used on which version of R. If something works now but not in the future `install_version` (found in `library(devtools)`) can be used to install the older version of particular packages.  
+The last bit of code is not necessary but is a convenient way to store which versions of which libraries were actually used on which version of R. If something works now but not in the future `install_version` (found in `library(devtools)`) can be used to install the older version of particular packages.
 
-
-```r
+``` r
 s <- session_info()
 s$platform
 ```
 
-```
- setting  value                       
- version  R version 3.4.2 (2017-09-28)
- os       macOS Sierra 10.12.6        
- system   x86_64, darwin15.6.0        
- ui       X11                         
- language (EN)                        
- collate  en_US.UTF-8                 
- tz       America/Los_Angeles         
- date     2017-11-01                  
-```
+     setting  value                       
+     version  R version 3.4.2 (2017-09-28)
+     os       macOS Sierra 10.12.6        
+     system   x86_64, darwin15.6.0        
+     ui       X11                         
+     language (EN)                        
+     collate  en_US.UTF-8                 
+     tz       America/Los_Angeles         
+     date     2017-11-04                  
 
-```r
+``` r
 s$packages
 ```
 
-```
- package     * version date       source                          
- assertthat    0.2.0   2017-04-11 CRAN (R 3.4.0)                  
- backports     1.1.1   2017-09-25 CRAN (R 3.4.2)                  
- bindr         0.1     2016-11-13 CRAN (R 3.4.0)                  
- bindrcpp      0.2     2017-06-17 CRAN (R 3.4.0)                  
- broom         0.4.2   2017-02-13 CRAN (R 3.4.0)                  
- cellranger    1.1.0   2016-07-27 CRAN (R 3.4.0)                  
- clisymbols    1.2.0   2017-05-21 cran (@1.2.0)                   
- colorspace    1.3-2   2016-12-14 CRAN (R 3.4.0)                  
- digest        0.6.12  2017-01-27 CRAN (R 3.4.0)                  
- dplyr       * 0.7.4   2017-09-28 cran (@0.7.4)                   
- evaluate      0.10.1  2017-06-24 CRAN (R 3.4.1)                  
- forcats       0.2.0   2017-01-23 CRAN (R 3.4.0)                  
- foreign     * 0.8-69  2017-06-22 CRAN (R 3.4.2)                  
- formatR       1.5     2017-04-25 CRAN (R 3.4.0)                  
- ggplot2     * 2.2.1   2016-12-30 CRAN (R 3.4.0)                  
- glue          1.2.0   2017-10-29 CRAN (R 3.4.2)                  
- gtable        0.2.0   2016-02-26 CRAN (R 3.4.0)                  
- haven         1.1.0   2017-07-09 CRAN (R 3.4.1)                  
- highr         0.6     2016-05-09 CRAN (R 3.4.0)                  
- hms           0.3     2016-11-22 CRAN (R 3.4.0)                  
- htmltools     0.3.6   2017-04-28 CRAN (R 3.4.0)                  
- httpuv        1.3.5   2017-07-04 CRAN (R 3.4.1)                  
- httr          1.3.1   2017-08-20 cran (@1.3.1)                   
- jsonlite      1.5     2017-06-01 CRAN (R 3.4.0)                  
- knitr       * 1.17    2017-08-10 CRAN (R 3.4.1)                  
- labeling      0.3     2014-08-23 CRAN (R 3.4.0)                  
- lattice       0.20-35 2017-03-25 CRAN (R 3.4.2)                  
- lazyeval      0.2.1   2017-10-29 CRAN (R 3.4.2)                  
- lubridate     1.7.0   2017-10-29 CRAN (R 3.4.2)                  
- magrittr      1.5     2014-11-22 CRAN (R 3.4.0)                  
- mime          0.5     2016-07-07 CRAN (R 3.4.0)                  
- miniUI        0.1.1   2016-01-15 CRAN (R 3.4.0)                  
- mnormt        1.5-5   2016-10-15 CRAN (R 3.4.0)                  
- modelr        0.1.1   2017-07-24 CRAN (R 3.4.1)                  
- munsell       0.4.3   2016-02-13 CRAN (R 3.4.0)                  
- nlme          3.1-131 2017-02-06 CRAN (R 3.4.2)                  
- pacman      * 0.4.6   2017-05-14 CRAN (R 3.4.0)                  
- pkgconfig     2.0.1   2017-03-21 CRAN (R 3.4.0)                  
- plyr          1.8.4   2016-06-08 CRAN (R 3.4.0)                  
- psych         1.7.8   2017-09-09 CRAN (R 3.4.1)                  
- purrr       * 0.2.4   2017-10-18 CRAN (R 3.4.2)                  
- questionr   * 0.6.1   2017-06-20 CRAN (R 3.4.1)                  
- R6            2.2.2   2017-06-17 CRAN (R 3.4.0)                  
- Rcpp          0.12.13 2017-09-28 cran (@0.12.13)                 
- readr       * 1.1.1   2017-05-16 CRAN (R 3.4.0)                  
- readxl        1.0.0   2017-04-18 CRAN (R 3.4.0)                  
- reshape2      1.4.2   2016-10-22 CRAN (R 3.4.0)                  
- rlang         0.1.2   2017-08-09 CRAN (R 3.4.1)                  
- rmarkdown     1.6     2017-06-15 CRAN (R 3.4.0)                  
- rprojroot     1.2     2017-01-16 CRAN (R 3.4.0)                  
- rstudioapi    0.7     2017-09-07 cran (@0.7)                     
- rvest         0.3.2   2016-06-17 CRAN (R 3.4.0)                  
- scales        0.5.0   2017-08-24 cran (@0.5.0)                   
- sessioninfo * 1.0.0   2017-06-21 CRAN (R 3.4.1)                  
- shiny         1.0.5   2017-08-23 cran (@1.0.5)                   
- stringi       1.1.5   2017-04-07 CRAN (R 3.4.0)                  
- stringr       1.2.0   2017-02-18 CRAN (R 3.4.0)                  
- tibble      * 1.3.4   2017-08-22 cran (@1.3.4)                   
- tidyr       * 0.7.2   2017-10-16 CRAN (R 3.4.2)                  
- tidyverse   * 1.1.1   2017-01-27 CRAN (R 3.4.0)                  
- withr         2.0.0   2017-10-25 Github (jimhester/withr@a43df66)
- xml2          1.1.1   2017-01-24 CRAN (R 3.4.0)                  
- xtable        1.8-2   2016-02-05 CRAN (R 3.4.0)                  
- yaml          2.1.14  2016-11-12 CRAN (R 3.4.0)                  
-```
-
-
-```
-
-```
+     package     * version date       source                          
+     assertthat    0.2.0   2017-04-11 CRAN (R 3.4.0)                  
+     backports     1.1.1   2017-09-25 CRAN (R 3.4.2)                  
+     bindr         0.1     2016-11-13 CRAN (R 3.4.0)                  
+     bindrcpp      0.2     2017-06-17 CRAN (R 3.4.0)                  
+     broom         0.4.2   2017-02-13 CRAN (R 3.4.0)                  
+     cellranger    1.1.0   2016-07-27 CRAN (R 3.4.0)                  
+     clisymbols    1.2.0   2017-05-21 cran (@1.2.0)                   
+     colorspace    1.3-2   2016-12-14 CRAN (R 3.4.0)                  
+     digest        0.6.12  2017-01-27 CRAN (R 3.4.0)                  
+     dplyr       * 0.7.4   2017-09-28 cran (@0.7.4)                   
+     evaluate      0.10.1  2017-06-24 CRAN (R 3.4.1)                  
+     forcats       0.2.0   2017-01-23 CRAN (R 3.4.0)                  
+     foreign     * 0.8-69  2017-06-22 CRAN (R 3.4.2)                  
+     formatR       1.5     2017-04-25 CRAN (R 3.4.0)                  
+     ggplot2     * 2.2.1   2016-12-30 CRAN (R 3.4.0)                  
+     glue          1.2.0   2017-10-29 CRAN (R 3.4.2)                  
+     gtable        0.2.0   2016-02-26 CRAN (R 3.4.0)                  
+     haven         1.1.0   2017-07-09 CRAN (R 3.4.1)                  
+     highr         0.6     2016-05-09 CRAN (R 3.4.0)                  
+     hms           0.3     2016-11-22 CRAN (R 3.4.0)                  
+     htmltools     0.3.6   2017-04-28 CRAN (R 3.4.0)                  
+     httpuv        1.3.5   2017-07-04 CRAN (R 3.4.1)                  
+     httr          1.3.1   2017-08-20 cran (@1.3.1)                   
+     jsonlite      1.5     2017-06-01 CRAN (R 3.4.0)                  
+     knitr       * 1.17    2017-08-10 CRAN (R 3.4.1)                  
+     labeling      0.3     2014-08-23 CRAN (R 3.4.0)                  
+     lattice       0.20-35 2017-03-25 CRAN (R 3.4.2)                  
+     lazyeval      0.2.1   2017-10-29 CRAN (R 3.4.2)                  
+     lubridate     1.7.0   2017-10-29 CRAN (R 3.4.2)                  
+     magrittr      1.5     2014-11-22 CRAN (R 3.4.0)                  
+     mime          0.5     2016-07-07 CRAN (R 3.4.0)                  
+     miniUI        0.1.1   2016-01-15 CRAN (R 3.4.0)                  
+     mnormt        1.5-5   2016-10-15 CRAN (R 3.4.0)                  
+     modelr        0.1.1   2017-07-24 CRAN (R 3.4.1)                  
+     munsell       0.4.3   2016-02-13 CRAN (R 3.4.0)                  
+     nlme          3.1-131 2017-02-06 CRAN (R 3.4.2)                  
+     pacman      * 0.4.6   2017-05-14 CRAN (R 3.4.0)                  
+     pkgconfig     2.0.1   2017-03-21 CRAN (R 3.4.0)                  
+     plyr          1.8.4   2016-06-08 CRAN (R 3.4.0)                  
+     psych         1.7.8   2017-09-09 CRAN (R 3.4.1)                  
+     purrr       * 0.2.4   2017-10-18 CRAN (R 3.4.2)                  
+     questionr   * 0.6.1   2017-06-20 CRAN (R 3.4.1)                  
+     R6            2.2.2   2017-06-17 CRAN (R 3.4.0)                  
+     Rcpp          0.12.13 2017-09-28 cran (@0.12.13)                 
+     readr       * 1.1.1   2017-05-16 CRAN (R 3.4.0)                  
+     readxl        1.0.0   2017-04-18 CRAN (R 3.4.0)                  
+     reshape2      1.4.2   2016-10-22 CRAN (R 3.4.0)                  
+     rlang         0.1.2   2017-08-09 CRAN (R 3.4.1)                  
+     rmarkdown     1.6     2017-06-15 CRAN (R 3.4.0)                  
+     rprojroot     1.2     2017-01-16 CRAN (R 3.4.0)                  
+     rstudioapi    0.7     2017-09-07 cran (@0.7)                     
+     rvest         0.3.2   2016-06-17 CRAN (R 3.4.0)                  
+     scales        0.5.0   2017-08-24 cran (@0.5.0)                   
+     sessioninfo * 1.0.0   2017-06-21 CRAN (R 3.4.1)                  
+     shiny         1.0.5   2017-08-23 cran (@1.0.5)                   
+     stringi       1.1.5   2017-04-07 CRAN (R 3.4.0)                  
+     stringr       1.2.0   2017-02-18 CRAN (R 3.4.0)                  
+     tibble      * 1.3.4   2017-08-22 cran (@1.3.4)                   
+     tidyr       * 0.7.2   2017-10-16 CRAN (R 3.4.2)                  
+     tidyverse   * 1.1.1   2017-01-27 CRAN (R 3.4.0)                  
+     withr         2.0.0   2017-10-25 Github (jimhester/withr@a43df66)
+     xml2          1.1.1   2017-01-24 CRAN (R 3.4.0)                  
+     xtable        1.8-2   2016-02-05 CRAN (R 3.4.0)                  
+     yaml          2.1.14  2016-11-12 CRAN (R 3.4.0)
