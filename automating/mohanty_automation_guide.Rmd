@@ -4,29 +4,29 @@ author: "Pete Mohanty"
 output: github_document
 ---
 
-This guide shows how to automate the summary of surveys with `R` and `RMarkdown` using `RStudio`. This is great for portions of the document that don't change (e.g., "the survey shows substantial partisan polarization"). The motivation is really twofold: *efficiency* (maximize the reusabililty of code, minimize copy and pasting errors) and *reproducability* (maximize the number of people and computers that can reproduce findings).
+This guide shows how to automate the summary of surveys with `R` and `RMarkdown` using `RStudio`. This is great for portions of the document that don't change (e.g., "the survey shows substantial partisan polarization"). The motivation is really twofold: *efficiency* (maximize the reusabililty of code, minimize copying and pasting errors) and *reproducability* (maximize the number of people and computers that can reproduce findings).
 
-The basic setup is to write an `Rmd` file that will serve as a template and then a short `R` script that loops over each data file (using `library(knitr)`). The `render` function then turns the `Rmd` into a `PDF` (or `HTML` or `docx` documents or slides as desired) by taking (file) metadata as a [parameter](http://rmarkdown.rstudio.com/developer_parameterized_reports.html). 
+The basic setup is to write an `Rmd` file that will serve as a template and then a short `R` script that loops over each data file (using `library(knitr)`). The `render` function then turns the `Rmd` into documents or slides (typically in `PDF`, `HTML`, or `docx`) by taking file metadata as a [parameter](http://rmarkdown.rstudio.com/developer_parameterized_reports.html). 
 
-There are countless ways to summarize a survey in `R`. This guide will show a few basics with `ggplot` and `questionr` but focus on the overall workflow (file management, etc.). Following the instructions here, you should be able to reproduce all four reports (and in principle, many more) despite only writing code to clean one survey. Most of the code is displayed in this document but everything you need is `pewpoliticaltemplate.Rmd` and `pew_report_generator.R`. All code, as well the outputted documents, can be found [here](https://github.com/rdrr1990/datascience101/tree/master/automating).
+There are countless ways to summarize a survey in `R`. This guide shows a few basics with `ggplot` and `questionr` but focuses on the overall workflow (file management, etc.). Following the instructions here, you should be able to reproduce all four reports (and in principle, many more) despite only writing code to clean one survey. Most of the code is displayed in this document but all code is found in either `pewpoliticaltemplate.Rmd` or `pew_report_generator.R`. All code, as well the outputted documents, can be found [here](https://github.com/rdrr1990/datascience101/tree/master/automating) and details on obtaining the data are found below.
 
 
 # Software
 
-`RStudio`'s interface with `rmarkdown` is evolving rapidly. Installing the current `RStudio` is highly recommended, particularly for the previews of the RMarkdown code (this doc was created with `1.1.83`). (Here is my [install guide](stats101.stanford.edu), which includes links to tutorials and cheat sheets. For somewhat more advanced survey data cleaning, click [here](stats101.stanford.edu/R_skill_dRill.html).) 
+`RStudio`'s interface with `library(rmarkdown)` is evolving rapidly. Installing the current `RStudio` is highly recommended, particularly for the previews of the `RMarkdown` code (this doc was created with `RStudio 1.1.83`). (Here is my [install guide](stats101.stanford.edu), which includes links to tutorials and cheat sheets. For somewhat more advanced survey data cleaning, click [here](stats101.stanford.edu/R_skill_dRill.html).) 
 
-Even if you've knit `Rmd` already, your libraries may not be new enough to create parameterized reports. I recommend installing `pacman`, which has a convenience function `p_load` that smoothes package installation, loading, and maintenance. (The `Rmd` template calls `library(pacman)` and then uses `p_load()` to load all other packages, which is what I'd recommend particularly if you are collaborating say on Dropbox.)   
+Even if you've knit `Rmd` already, your libraries may not be new enough to create parameterized reports. I recommend installing `pacman`, which has a convenience function `p_load` that smooths package installation, loading, and maintenance.  I'd recommend `p_load` particularly if you are collaborating say on `Dropbox`.
 
 ```{r, eval = FALSE}
 install.packages("pacman")
 p_load(rmarkdown, knitr, foreign, scales, questionr, tidyverse, update = TRUE)
 ```
 
-Remember `PDF` requires `LaTeX` [(install links)](stats101.stanford.edu). By contrast, knitting to `docx` or `HTML` does not require `LaTeX`. Creating `pptx` is possible with `R` with `library(ReporteRs)` (and, of course, you can choose to produce HTML or Beamer slides with RMarkdown).
+Remember `PDF` requires `LaTeX` [(install links)](stats101.stanford.edu). By contrast, knitting to `docx` or `HTML` does not require `LaTeX`. Creating `pptx` is possible with `R` with `library(ReporteRs)` but not discussed here.
 
 # The Data
 
-Download the four "political surveys" from Pew Research available [here](http://www.people-press.org/datasets/2016/) (i.e., January, March, August, and October 2016). You may recall, some politics happened in 2016.
+Download the four "political surveys" from Pew Research available [here](http://www.people-press.org/datasets/2016/) (i.e., January, March, August, and October 2016). You may recall, some politics happened in 2016. (The data is free provided you take a moment to make an account.)
 
 - If need be, decompress each `zip` folder.
 
@@ -42,9 +42,9 @@ Please note I have no affiliation (past or present) with Pew Research. I simply 
 
 (RMarkdown ninjas can skip this section.)  
 
-In `RStudio`, create a new `RNotebook` and save it as `pewpoliticaltemplate.Rmd` in the `automating` folder you just created. This document will likely knit to `HTML` by default; hold down the `knit` button to change it to `PDF`. Add fields to the header as desired. The sample header below automatically puts today's date on the document by parsing the expression next to `Date:` as `R` code. `classoption: landscape` may help with wide tables. You can also specify the file that contains your bibliography in several formats such as `BibTex` and `EndNote` [citation details](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html).
+In `RStudio`, create a new `RNotebook` and save it as `pewpoliticaltemplate.Rmd` in the `automating` folder you just created. This document will likely knit to `HTML` by default; hold down the `knit` button to change it to `PDF`. Add fields to the header as desired. The sample header below automatically puts today's date on the document by parsing the expression next to `Date:` as `R` code. `classoption: landscape` may help with wide tables. You can also specify the file that contains your bibliography in several formats such as `BibTex` and `EndNote` [(citation details)](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html).
 
-Next add an `R` code chunk to `pewpoliticaltemplate.Rmd` to take care of background stuff like formatting. Though setting a working directory would not be needed just to knit the `Rmd`, the directory must be set by `knitr::opts_chunk$set(root.dir = '...')` to automate document prep. (`setwd` isn't needed in the `Rmd` but setting the working directory separately in `Console` is recommended if you're still editing.)
+Next add an `R` code chunk to `pewpoliticaltemplate.Rmd` to take care of background stuff like formatting. Though setting a working directory would not be needed just to knit the `Rmd`, the directory must be set by `knitr::opts_knit$set(root.dir = '...')` to automate document prep. (`setwd` isn't needed in the `Rmd` but setting the working directory separately in `Console` is recommended if you're still editing.)
 
 ![Initial Configuration](images/config.png)
 
@@ -60,7 +60,7 @@ opts_chunk$set(warning = FALSE,                          # don't display warning
                fig.path = 'images/')
 ```
 
-The play button at the top right gives a preview of the code's output, which is handy. Also, if some part of the analysis is very lengthy, you can only run that one once and then tinker with the graphics in a separate block.
+The play button at the top right gives a preview of the code's output, which is handy. If some part of the analysis is very lengthy, it only needs to be run once, freeing you to tinker with graphics and the like.
 
 -- Now the default settings have been set and you don't need to worry about suppressing warnings and so on with each code chunk. You can of course change them case-by-case as you like. 
 
@@ -116,7 +116,7 @@ Summary stats can easily be inserted into the text like so.
 
 ![Calling R In Line](images/intext.png)
 
-The template contains additional examples with survey weights (lengthier calculations should be done in blocks of code and then their result refered with that inline style).
+The template contains additional examples with survey weights (lengthier calculations should be done in blocks of code and then their result referred with that inline style).
 
 Here is a basic plot we might want, which reflects the survey weights. `facet_grid()` is used to create analogous plots for each party identification. The plot uses the slightly wonky syntax `y = (..count..)/sum(..count..)` to display the results as percentages rather than counts. Note some code that cleans the data (mostly shortening labels) is omitted for brevity but can be found [here](https://github.com/rdrr1990/datascience101/blob/master/automating/pewpoliticaltemplate.Rmd).
 
@@ -177,17 +177,18 @@ for(i in x){
 
 A few notes:
 
-  -- This code will only work with the `asis` setting (shown above) that lets `knitr` interpret the output of print(kable()) as something to render (rather just Markdown code to display that could be copy and pastied elsewhere).  
+  -- This code will only work with the `asis` setting (shown above) that lets `knitr` interpret the output of `print(kable())` as something to render (rather than just `Markdown` code to display for use elsewhere).  
   
   -- Ideally one would have a `csv` or `data.frame` of the questions and display the as loop switched questions. In this case, the questionnaire is in a `docx` and so `library(docxtrackr)` may help.  
   
   -- Rather than a nested loop, one would likely prefer to pick a question, loop over the demographic and ideological categories for the crosstabs, and then insert commentary and overview.  
   
-  -- The outer loops makes a new page each time it is done with the inner loop with `cat("\\newpage"))`, which is specific to making `PDF`s. Extra line breaks `\n` are needed to break out of the table formatting and keep code and text separate. A different approach to page breaks is needed [for docx](https://stackoverflow.com/questions/24672111/how-to-add-a-page-break-in-word-document-generated-by-rstudio-markdown).
+  -- The outer loops makes a new page each time it is done with the inner loop with `cat("\\newpage"))`, which is specific to rendering as `PDF`. Extra line breaks `\n` are needed to break out of the table formatting and keep code and text separate. A different approach to page breaks is needed [for docx](https://stackoverflow.com/questions/24672111/how-to-add-a-page-break-in-word-document-generated-by-rstudio-markdown).
 
 # Adapting the Template with Parameters
 
-The next step is to add a [parameter](http://rmarkdown.rstudio.com/developer_parameterized_reports.html) with any variables you need. The parameters will be controlled by the `R` script discussed below. There is of course quite a bit of choice as to what is controlled by which file. Add the following to the end of the header of `pewpoliticaltemplate.Rmd`:
+The next step is to add a [parameter](http://rmarkdown.rstudio.com/developer_parameterized_reports.html) with any variables you need. The parameters will be controlled by the `R` script discussed below. 
+There is of course quite a bit of choice as to what is controlled by which file but often only a handful of parameters are necessary. Add the following to the end of the header of `pewpoliticaltemplate.Rmd`:
 
 ```
 params:
@@ -213,7 +214,7 @@ dir(pattern = "sav", recursive = TRUE)
 ```
 or in this case
 ```{r}
-dir(pattern = "public.sav", recursive = TRUE)
+dir(pattern = "16 public.sav", recursive = TRUE)
 ```
 I recommend making the pattern as specific as possible in case you or your collaborators add other `spss` files with similar names. To use regular expressions to specify more complicated patterns, see [here](https://rstudio-pubs-static.s3.amazonaws.com/74603_76cd14d5983f47408fdf0b323550b846.html). 
 
@@ -246,7 +247,7 @@ session <- session_info()
 save(session, file = paste0("session", format(Sys.time(), '%m%d%Y'), ".Rdata"))
 ```
 
-That\'s it. Of course, in practice you might write some code on the first survey that doesn\'t work for all of them. Pew, for example, seems to have formatted the survey date differently in the last two surveys which made me make a few changes. But if the data are formatted consistently, a one-time investment in modifying your `Rmd` and creating an extra `R` file can save massive amounts of time lost to error prone copying and pasting.
+That's it. Of course, in practice you might write some code on the first survey that doesn't work for all of them. Pew, for example, seems to have formatted the survey date differently in the last two surveys which led me to make a few changes. But if the data are formatted fairly consistently, a one-time investment can save massive amounts of time lost to error prone copying and pasting.
 
 ### A Little Version Control 
 
