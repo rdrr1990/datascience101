@@ -85,7 +85,7 @@ PA <- PA + scale_y_continuous(labels = scales::percent)
 PA
 ```
 
-![](mohanty_automation_guide_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-1.png)
+![](images/ggPresApproval-1.png)
 
 Here is an example of a weighted crosstab. `knitr::kable` will create a table that's professional in appearance (when knit as `PDF`, `kable` takes the style of an academic journal).
 

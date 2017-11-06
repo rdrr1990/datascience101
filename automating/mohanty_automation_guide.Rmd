@@ -56,7 +56,8 @@ opts_chunk$set(warning = FALSE,                          # don't display warning
                comment = "",                             # get rid of ## before R output
                tidy = TRUE,
                asis = TRUE,
-               root.dir = '/users/mohanty/Dropbox/git/ds101/automating/')
+               root.dir = '/users/mohanty/Dropbox/git/ds101/automating/',
+               fig.path = 'images/')
 ```
 
 The play button at the top right gives a preview of the code's output, which is handy. Also, if some part of the analysis is very lengthy, you can only run that one once and then tinker with the graphics in a separate block.
@@ -119,7 +120,7 @@ The template contains additional examples with survey weights (lengthier calcula
 
 Here is a basic plot we might want, which reflects the survey weights. `facet_grid()` is used to create analogous plots for each party identification. The plot uses the slightly wonky syntax `y = (..count..)/sum(..count..)` to display the results as percentages rather than counts. Note some code that cleans the data (mostly shortening labels) is omitted for brevity but can be found [here](https://github.com/rdrr1990/datascience101/blob/master/automating/pewpoliticaltemplate.Rmd).
 
-```{r}
+```{r ggPresApproval}
 PA <- ggplot(survey) + theme_minimal()
 PA <- PA + geom_bar(aes(q1, y = (..count..)/sum(..count..), weight = weight, fill = q1)) 
 PA <- PA + facet_grid(party.clean ~ .) + theme(strip.text.y = element_text(angle = 45))
