@@ -102,11 +102,11 @@ kable(wtd.table(survey$ideo, survey$sex, survey$weight)/nrow(survey), digits = 2
 | Very liberal      |  0.03|    0.03|
 | DK\*              |  0.02|    0.03|
 
-Suppose we want Presidential approval where the columns provide first overall approval and subsequent columns are crosstabs for various factors of interest (using the cell phone weights). I've written a convenience function called [tabs](https://github.com/rdrr1990/datascience101/blob/master/automating/tabs.R) that does this. Let me know what you think or if you think additional features would be better and I'll submit a pull request to `library(questionr)`.
+Suppose we want Presidential approval where the columns provide first overall approval and subsequent columns are crosstabs for various factors of interest (using the cell phone weights). I've written a convenience function called [Xtabs](https://github.com/rdrr1990/datascience101/blob/master/automating/Xtabs.R) that creates this format, which is common in the survey world.
 
 ``` r
-source("https://raw.githubusercontent.com/rdrr1990/datascience101/master/automating/tabs.R")
-kable(tabs(survey, "q1", c("sex", "race"), weight = "cellweight"))
+source("https://raw.githubusercontent.com/rdrr1990/datascience101/master/automating/Xtabs.R")
+kable(Xtabs(survey, "q1", c("sex", "race"), weight = "cellweight"))
 ```
 
 |                  | Overall | Male  | Female | White (nH) | Black (nH) | Hispanic | Other  | DK\*   |
@@ -262,7 +262,7 @@ s$platform
      language (EN)                        
      collate  en_US.UTF-8                 
      tz       America/Los_Angeles         
-     date     2017-11-04                  
+     date     2017-11-06                  
 
 ``` r
 s$packages
@@ -310,7 +310,7 @@ s$packages
      plyr          1.8.4   2016-06-08 CRAN (R 3.4.0)                  
      psych         1.7.8   2017-09-09 CRAN (R 3.4.1)                  
      purrr       * 0.2.4   2017-10-18 CRAN (R 3.4.2)                  
-     questionr   * 0.6.1   2017-06-20 CRAN (R 3.4.1)                  
+     questionr   * 0.6.3   2017-11-06 local                           
      R6            2.2.2   2017-06-17 CRAN (R 3.4.0)                  
      Rcpp          0.12.13 2017-09-28 cran (@0.12.13)                 
      readr       * 1.1.1   2017-05-16 CRAN (R 3.4.0)                  

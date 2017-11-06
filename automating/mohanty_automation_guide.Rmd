@@ -51,12 +51,12 @@ Next add an `R` code chunk to `pewpoliticaltemplate.Rmd` to take care of backgro
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 library(pacman)                            
 p_load(knitr, foreign, tidyverse, questionr, sessioninfo)
-opts_chunk$set(warning = FALSE)                          # don't display warnings
-opts_chunk$set(message = FALSE)                          # or messages
-opts_chunk$set(comment = "")                             # get rid of ## before R output
-opts_chunk$set(tidy = TRUE)
-opts_chunk$set(asis = TRUE)
-knitr::opts_knit$set(root.dir = '/users/mohanty/Dropbox/git/ds101/automating/')
+opts_chunk$set(warning = FALSE,                          # don't display warnings
+               message = FALSE,                          # or messages
+               comment = "",                             # get rid of ## before R output
+               tidy = TRUE,
+               asis = TRUE,
+               root.dir = '/users/mohanty/Dropbox/git/ds101/automating/')
 ```
 
 The play button at the top right gives a preview of the code's output, which is handy. Also, if some part of the analysis is very lengthy, you can only run that one once and then tinker with the graphics in a separate block.
@@ -129,7 +129,6 @@ PA <- PA + scale_y_continuous(labels = scales::percent)
 PA
 ```
 
-\newpage
 
 Here is an example of a weighted crosstab. `knitr::kable` will create a table that's professional in appearance (when knit as `PDF`, `kable` takes the style of an academic journal).
 
@@ -138,11 +137,11 @@ kable(wtd.table(survey$ideo, survey$sex, survey$weight)/nrow(survey), digits = 2
 ```
 
 
-Suppose we want Presidential approval where the columns provide first overall approval and subsequent columns are crosstabs for various factors of interest (using the cell phone weights). I've written a convenience function called [tabs](https://github.com/rdrr1990/datascience101/blob/master/automating/tabs.R) that does this. Let me know what you think or if you think additional features would be better and I'll submit a pull request to `library(questionr)`.
+Suppose we want Presidential approval where the columns provide first overall approval and subsequent columns are crosstabs for various factors of interest (using the cell phone weights). I've written a convenience function called [Xtabs](https://github.com/rdrr1990/datascience101/blob/master/automating/Xtabs.R) that creates this format, which is common in the survey world. 
 
 ```{r}
-source("https://raw.githubusercontent.com/rdrr1990/datascience101/master/automating/tabs.R")
-kable(tabs(survey, "q1", c("sex", "race"), weight = "cellweight"))
+source("https://raw.githubusercontent.com/rdrr1990/datascience101/master/automating/Xtabs.R")
+kable(Xtabs(survey, "q1", c("sex", "race"), weight = "cellweight"))
 ```
 
 Suppose we want to do many crosstabs. The syntax `survey$ideo` is widely used for convenience but `survey[["ideo"]]` will serve us better since it allow to work with vectors of variable names ([details from win-vector](http://www.win-vector.com/blog/2017/06/non-standard-evaluation-and-function-composition-in-r/)). Below, the first two calls to comparisons are identical but the final one is not because there is no variable "x" in the data frame `survey`.
