@@ -46,7 +46,7 @@ In `RStudio`, create a new `RNotebook` and save it as `pewpoliticaltemplate.Rmd`
 
 Next add an `R` code chunk to `pewpoliticaltemplate.Rmd` to take care of background stuff like formatting. Though setting a working directory would not be needed just to knit the `Rmd`, the directory must be set by `knitr::opts_chunk$set(root.dir = '...')` to automate document prep. (`setwd` isn't needed in the `Rmd` but setting the working directory separately in `Console` is recommended if you're still editing.)
 
-![Initial Configuration](config.png)
+![Initial Configuration](images/config.png)
 
 The play button at the top right gives a preview of the code's output, which is handy. Also, if some part of the analysis is very lengthy, you can only run that one once and then tinker with the graphics in a separate block.
 
@@ -68,7 +68,7 @@ survey <- read.spss("Jan16/Jan16 public.sav", to.data.frame = TRUE)
 
 Summary stats can easily be inserted into the text like so.
 
-![Calling R In Line](intext.png)
+![Calling R In Line](images/intext.png)
 
 The template contains additional examples with survey weights (lengthier calculations should be done in blocks of code and then their result refered with that inline style).
 
@@ -181,7 +181,7 @@ The next step is to add a [parameter](http://rmarkdown.rstudio.com/developer_par
       spssfile: !r  1
       surveywave: !r 2016
 
-![RMarkdown Header with Parameters](newheader.png)
+![RMarkdown Header with Parameters](images/newheader.png)
 
 That creates variables `params$spssfile` and `params$surveywave` that can be controlled externally from other `R` sessions and gives them default values of `1` and `2016`. Setting default values smooths debugging by allowing you to continue knitting the `Rmd` on its own (as opposed to from the `R` script we will create in a moment... You can also click on `knit` and choose `knit with parameters` to specify particular values).
 
@@ -217,7 +217,7 @@ I recommend making the pattern as specific as possible in case you or your colla
 
 Now back to editing `pewpoliticaltemplate.Rmd`...
 
-![Reading Data given Parameters](newreadingdata.png)
+![Reading Data given Parameters](images/newreadingdata.png)
 
 Knit the file to see how it looks with these default settings; that's it for this portion.
 
