@@ -1,10 +1,10 @@
 ---
 title: 'From Data to Document: A Practical Guide to Parameterizing Reports'
+author: "Bay Area R Users Group, November 2017"
 subtitle: Pete Mohanty
-author: 'Bay Area R Users Group, November 2017'
 output:
   slidy_presentation: default
-  ioslides_presentation: default
+    
 ---
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 library(pacman)                            
@@ -153,7 +153,7 @@ for(i in x){
 
 ```{r ggPresApproval, fig.height=3}
 PA <- ggplot(survey) + geom_bar(aes(q1, y = (..count..)/sum(..count..), weight = weight, fill = q1)) + facet_grid(party.clean ~ .)
-PA <- PA + theme_minimal() + theme(strip.text.y = element_text(angle = 45)) + xlab("") + scale_y_continuous(labels = scales::percent) + ylab("Percent of Country") + ggtitle("Presidential Approval: January 2016")
+PA <- PA + theme_minimal() + theme(strip.text.y = element_text(angle = 45)) + xlab("") + ylab("Percent of Country") + scale_y_continuous(labels = scales::percent) + ggtitle("Presidential Approval: January 2016")
 PA
 ```
 
@@ -208,14 +208,13 @@ If a package stops working `install_version` (from `library(devtools)`) installs
 
 ```{r}
 s <- session_info()
-s$platform$version
-s$platform$os
-head(s$packages)
+cat("This doc was knit with", s$platform$version, "on", s$platform$os, "using the following packages:")
+s$packages
 ```
 
 # Thanks! 
 
-![](images/kickin.png){width=500px}
+![](images/kickin.png){height=450px}
 
 
 
