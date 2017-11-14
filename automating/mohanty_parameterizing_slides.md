@@ -7,13 +7,6 @@ Tonight's Code via RViews: [http://bit.ly/2AE6En3](https://rviews.rstudio.com/20
 
 <img src="images/mohanty_rviews.png" width="800" />
 
-<style>
-  .col2 {
-    columns: 2 200px;         /* number of columns and width in pixels*/
-    -webkit-columns: 2 200px; /* chrome, safari */
-    -moz-columns: 2 200px;    /* firefox */
-    text-align: center;
-</style>
 Motivation
 ==========
 
@@ -119,7 +112,7 @@ Adding a plot
 PA <- ggplot(survey) + geom_bar(aes(q1, y = (..count..)/sum(..count..), weight = weight, 
     fill = q1)) + facet_grid(party.clean ~ .)
 PA <- PA + theme_minimal() + theme(strip.text.y = element_text(angle = 45)) + 
-    xlab("") + scale_y_continuous(labels = scales::percent) + ylab("Percent of Country") + 
+    xlab("") + ylab("Percent of Country") + scale_y_continuous(labels = scales::percent) + 
     ggtitle("Presidential Approval: January 2016")
 PA
 ```
@@ -182,30 +175,82 @@ If a package stops working `install_version` (from `library(devtools)`) installs
 
 ``` r
 s <- session_info()
-s$platform$version
+cat("This doc was knit with", s$platform$version, "on", s$platform$os, "using the following packages:")
 ```
 
-    [1] "R version 3.4.2 (2017-09-28)"
+    This doc was knit with R version 3.4.2 (2017-09-28) on macOS Sierra 10.12.6 using the following packages:
 
 ``` r
-s$platform$os
+s$packages
 ```
 
-    [1] "macOS Sierra 10.12.6"
-
-``` r
-head(s$packages)
-```
-
-     package    * version date       source        
-     assertthat   0.2.0   2017-04-11 CRAN (R 3.4.0)
-     backports    1.1.1   2017-09-25 CRAN (R 3.4.2)
-     bindr        0.1     2016-11-13 CRAN (R 3.4.0)
-     bindrcpp     0.2     2017-06-17 CRAN (R 3.4.0)
-     broom        0.4.2   2017-02-13 CRAN (R 3.4.0)
-     cellranger   1.1.0   2016-07-27 CRAN (R 3.4.0)
+     package     * version date       source                          
+     assertthat    0.2.0   2017-04-11 CRAN (R 3.4.0)                  
+     backports     1.1.1   2017-09-25 CRAN (R 3.4.2)                  
+     bindr         0.1     2016-11-13 CRAN (R 3.4.0)                  
+     bindrcpp      0.2     2017-06-17 CRAN (R 3.4.0)                  
+     broom         0.4.2   2017-02-13 CRAN (R 3.4.0)                  
+     cellranger    1.1.0   2016-07-27 CRAN (R 3.4.0)                  
+     clisymbols    1.2.0   2017-05-21 cran (@1.2.0)                   
+     colorspace    1.3-2   2016-12-14 CRAN (R 3.4.0)                  
+     digest        0.6.12  2017-01-27 CRAN (R 3.4.0)                  
+     dplyr       * 0.7.4   2017-09-28 cran (@0.7.4)                   
+     evaluate      0.10.1  2017-06-24 CRAN (R 3.4.1)                  
+     forcats       0.2.0   2017-01-23 CRAN (R 3.4.0)                  
+     foreign     * 0.8-69  2017-06-22 CRAN (R 3.4.2)                  
+     formatR       1.5     2017-04-25 CRAN (R 3.4.0)                  
+     ggplot2     * 2.2.1   2016-12-30 CRAN (R 3.4.0)                  
+     glue          1.2.0   2017-10-29 CRAN (R 3.4.2)                  
+     gtable        0.2.0   2016-02-26 CRAN (R 3.4.0)                  
+     haven         1.1.0   2017-07-09 CRAN (R 3.4.1)                  
+     highr         0.6     2016-05-09 CRAN (R 3.4.0)                  
+     hms           0.3     2016-11-22 CRAN (R 3.4.0)                  
+     htmltools     0.3.6   2017-04-28 CRAN (R 3.4.0)                  
+     httpuv        1.3.5   2017-07-04 CRAN (R 3.4.1)                  
+     httr          1.3.1   2017-08-20 cran (@1.3.1)                   
+     jsonlite      1.5     2017-06-01 CRAN (R 3.4.0)                  
+     knitr       * 1.17    2017-08-10 CRAN (R 3.4.1)                  
+     labeling      0.3     2014-08-23 CRAN (R 3.4.0)                  
+     lattice       0.20-35 2017-03-25 CRAN (R 3.4.2)                  
+     lazyeval      0.2.1   2017-10-29 CRAN (R 3.4.2)                  
+     lubridate     1.7.0   2017-10-29 CRAN (R 3.4.2)                  
+     magrittr      1.5     2014-11-22 CRAN (R 3.4.0)                  
+     mime          0.5     2016-07-07 CRAN (R 3.4.0)                  
+     miniUI        0.1.1   2016-01-15 CRAN (R 3.4.0)                  
+     mnormt        1.5-5   2016-10-15 CRAN (R 3.4.0)                  
+     modelr        0.1.1   2017-07-24 CRAN (R 3.4.1)                  
+     munsell       0.4.3   2016-02-13 CRAN (R 3.4.0)                  
+     nlme          3.1-131 2017-02-06 CRAN (R 3.4.2)                  
+     pacman      * 0.4.6   2017-05-14 CRAN (R 3.4.0)                  
+     pkgconfig     2.0.1   2017-03-21 CRAN (R 3.4.0)                  
+     plyr          1.8.4   2016-06-08 CRAN (R 3.4.0)                  
+     psych         1.7.8   2017-09-09 CRAN (R 3.4.1)                  
+     purrr       * 0.2.4   2017-10-18 CRAN (R 3.4.2)                  
+     questionr   * 0.6.3   2017-11-06 local                           
+     R6            2.2.2   2017-06-17 CRAN (R 3.4.0)                  
+     Rcpp          0.12.13 2017-09-28 cran (@0.12.13)                 
+     readr       * 1.1.1   2017-05-16 CRAN (R 3.4.0)                  
+     readxl        1.0.0   2017-04-18 CRAN (R 3.4.0)                  
+     reshape2      1.4.2   2016-10-22 CRAN (R 3.4.0)                  
+     rlang         0.1.2   2017-08-09 CRAN (R 3.4.1)                  
+     rmarkdown     1.6     2017-06-15 CRAN (R 3.4.0)                  
+     rprojroot     1.2     2017-01-16 CRAN (R 3.4.0)                  
+     rstudioapi    0.7     2017-09-07 cran (@0.7)                     
+     rvest         0.3.2   2016-06-17 CRAN (R 3.4.0)                  
+     scales        0.5.0   2017-08-24 cran (@0.5.0)                   
+     sessioninfo * 1.0.0   2017-06-21 CRAN (R 3.4.1)                  
+     shiny         1.0.5   2017-08-23 cran (@1.0.5)                   
+     stringi       1.1.5   2017-04-07 CRAN (R 3.4.0)                  
+     stringr       1.2.0   2017-02-18 CRAN (R 3.4.0)                  
+     tibble      * 1.3.4   2017-08-22 cran (@1.3.4)                   
+     tidyr       * 0.7.2   2017-10-16 CRAN (R 3.4.2)                  
+     tidyverse   * 1.1.1   2017-01-27 CRAN (R 3.4.0)                  
+     withr         2.0.0   2017-10-25 Github (jimhester/withr@a43df66)
+     xml2          1.1.1   2017-01-24 CRAN (R 3.4.0)                  
+     xtable        1.8-2   2016-02-05 CRAN (R 3.4.0)                  
+     yaml          2.1.14  2016-11-12 CRAN (R 3.4.0)                  
 
 Thanks!
 =======
 
-<img src="images/kickin.png" width="500" />
+<img src="images/kickin.png" height="450" />
