@@ -120,7 +120,7 @@ grid.arrange(g, p, gr, r, ncol = 2)
 
 
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
-f <- ggplot() + xlim(c(0, 1)) + ylim(c(0,10)) + theme_minimal() + theme(axis.title.x=element_blank(),
+f <- ggplot() + xlim(c(0, 50)) + ylim(c(0, 50)) + theme_minimal() + theme(axis.title.x=element_blank(),
                axis.text.x=element_blank(),
                axis.ticks.x=element_blank(), 
                axis.title.y=element_blank(),
@@ -129,10 +129,12 @@ f <- ggplot() + xlim(c(0, 1)) + ylim(c(0,10)) + theme_minimal() + theme(axis.tit
                panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 f <- f + theme(text = element_text(size = 30, family = "xkcd"))
 f <- f + ggtitle("Stanford Statistics 2017-18")
+f <- f + annotate("text", x = 20, y = 40, size = 6,
+           label = "About: comic by Pete Mohanty using\nR library xkcd\nby Emilio Torres-Manzanera.\nSource code for this comic linked below", family="xkcd")
 f
 ```
 
 
 ## About
 
-Comic by Pete Mohanty using `library(xkcd)` by Emilio Torres-Manzanera <torres@uniovi.es>. Source code available [here]().
+Comic by Pete Mohanty using `library(xkcd)` by Emilio Torres-Manzanera <torres@uniovi.es>. Source code available [here](https://github.com/rdrr1990/datascience101/blob/master/good_judgement_xkcd_style.Rmd).
