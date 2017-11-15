@@ -1,0 +1,138 @@
+---
+title: "Department T-Shirt Competition"
+author: "Pete Mohanty"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
+library(xkcd) # vignette("xkcd-intro")
+# https://github.com/cran/xkcd/blob/master/vignettes/xkcd-intro.Rnw
+library(gridExtra)
+set.seed(2017)
+N <- 200
+type1 <- type2 <- judgement <- c()
+for(i in 1:N){
+  type1[i] <- sum(rbinom(i, 1, 0.05))
+  type2[i] <- sum(rbinom(i, 1, 0.20))
+  e <- type1[i] + type2[i] + type1[i] * type2[i]
+  judgement[i] <- rnorm(1, mean = e, sd = e) 
+}
+d <- data.frame(Ndecisions = c(1:N, 1:N),
+                Nmistakes = c(type1, type2),
+                goodjudgement = c(judgement, judgement),
+                Error = c(rep("Type 1", N), rep("Type 2", N)))
+
+xrange <- range(d$Nmistakes)
+yrange <- range(d$goodjudgement)
+# hat <- coef(lm(goodjudgement ~ Nmistakes, data = d))
+out <- lm(judgement ~ type1 + type2)
+hat <- coef(out)
+
+mapping <- aes(x, y, scale, ratioxy, angleofspine,
+               anglerighthumerus, anglelefthumerus,
+               anglerightradius, angleleftradius,
+               anglerightleg, angleleftleg, angleofneck)
+
+ratioxy <- diff(xrange)/diff(yrange)
+dataman <- data.frame(x=c(0, 15), y = c(200, 100),
+                      scale = 100,
+                      ratioxy = ratioxy,
+                      angleofspine =  -pi/2  ,
+                      anglerighthumerus = c(-pi/4, -pi/6),
+                      anglelefthumerus = c(7*pi/6, pi +pi/6),
+                      anglerightradius = c(-pi/3, -pi/3),
+                      angleleftradius = c(-pi/3, -pi/3),
+                      anglerightleg = 3*pi/2  - pi / 12,
+                      angleleftleg = 3*pi/2  + pi / 12 ,
+                      angleofneck = runif(1, 3*pi/2-pi/10, 3*pi/2+pi/10))
+
+g <- ggplot(data = d) + theme_minimal() + theme(text = element_text(size = 16, family = "xkcd")) + xlab("") + ylab("") + xkcdman(mapping, dataman)
+g <- g + annotate("text", x = 7.25, y = 185, size = 4,
+           label = "Good judgement\ncomes from experience.\nExperience comes from\nType 1 and Type 2 errors.", family="xkcd")
+g <- g + annotate("text", x = 10.75, y = 60, size = 4,
+           label = "How do you know?", family="xkcd")
+g <- g + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(), 
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+```
+
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
+p <- ggplot() + geom_point(aes(x = Nmistakes, y = goodjudgement, colour = Error), data = d)# + xkcdaxis(xrange, yrange)
+p <- p + xlab("N Mistakes") + ylab("Good Judgement")
+p <- p + geom_abline(intercept = hat[1], slope = hat[2], colour = "turquoise")
+p <- p + geom_abline(intercept = hat[1], slope = hat[3], colour = "salmon")
+p <- p + theme_minimal() + theme(text = element_text(size = 16, family = "xkcd")) 
+#p <- p + xkcdman(mapping, dataman) + annotate("text", x=31, y = 1000, size = 4,
+#           label = "Effects are\n statistically signficant!!", family="xkcd" )
+p <- p + ggtitle("Statistically Significant\nFindings")
+p <- p + theme(axis.ticks.x=element_blank(), 
+        axis.ticks.y=element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+```
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
+gr <- ggplot(data = d) + xlim(c(-10, 20))+
+  theme_minimal() + theme(text = element_text(size = 16, family = "xkcd")) + xlab("") + ylab("") + xkcdman(mapping, dataman[1,]) 
+gr <- gr + annotate("text", x = 10, y = 175, size = 4,
+                  label = "So relax when you err,\ngood judgement will\ncome in time!", family="xkcd")
+gr <- gr + theme(axis.title.x=element_blank(),
+               axis.text.x=element_blank(),
+               axis.ticks.x=element_blank(), 
+               axis.title.y=element_blank(),
+               axis.text.y=element_blank(),
+               axis.ticks.y=element_blank(),
+               panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+
+
+```
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
+
+reliability <- data.frame(Ndecisions = 1:N,
+                        variance = (type1 + type2 + type1*type2)^2)
+
+dataman$y[2] <- .8*max((type1 + type2 + type1*type2)^2)
+dataman$scale[2] <- .25*max((type1 + type2 + type1*type2)^2)
+dataman$ratioxy[2] <- N/max((type1 + type2 + type1*type2)^2)
+  
+r <- ggplot(data = reliability, aes(x = Ndecisions, y = variance)) + geom_point()
+r <- r + theme_minimal() + theme(text = element_text(size = 16, family = "xkcd"))
+r <- r + ylab("Variance of Judgement") + xlab ("Number of Decisions")
+r <- r + xkcdman(mapping, dataman[2,]) 
+r <- r + theme(axis.text.y=element_blank(),
+               axis.ticks.y=element_blank(),
+               panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+r <- r + annotate("text", x = 100, y = .75*max((type1 + type2 + type1*type2)^2), size = 4,
+                  label = "Except there's a\nheteroskedasticity\nproblem...", family="xkcd")
+
+grid.arrange(g, p, gr, r, ncol = 2)
+
+```
+
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
+f <- ggplot() + xlim(c(0, 1)) + ylim(c(0,10)) + theme_minimal() + theme(axis.title.x=element_blank(),
+               axis.text.x=element_blank(),
+               axis.ticks.x=element_blank(), 
+               axis.title.y=element_blank(),
+               axis.text.y=element_blank(),
+               axis.ticks.y=element_blank(),
+               panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+f <- f + theme(text = element_text(size = 30, family = "xkcd"))
+f <- f + ggtitle("Stanford Statistics 2017-18")
+f
+```
+
+
+## About
+
+Comic by Pete Mohanty using `library(xkcd)` by Emilio Torres-Manzanera <torres@uniovi.es>. Source code available [here]().
