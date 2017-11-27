@@ -256,10 +256,7 @@ The last bit of code is not necessary but is a convenient way to store which ver
 ```{r}
 s <- session_info()
 s$platform
-s$packages
+s$packages[1:5,]
 ```
 
-
-```
-
-```
+For more advanced package version management, see [packrat](https://rstudio.github.io/packrat/).
